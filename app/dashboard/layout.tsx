@@ -3,7 +3,7 @@
 import { AppShell, Group, ScrollArea, Image, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import NextImage from 'next/image';
-import { IconLock, IconHome } from '@tabler/icons-react';
+import { IconLock, IconHome, IconSword, IconShield, IconSwords } from '@tabler/icons-react';
 import { ColorSchemeToggle, LinksGroup, UserButton } from '@/components';
 import classes from './Dashboard.module.css';
 import icon from '@/public/icon.png';
@@ -18,6 +18,50 @@ const mockdata = [
       { label: 'Overview', link: '/dashboard/permissions' },
       { label: 'SOPs', link: '/dashboard/permissions/sops' },
       { label: 'Rules', link: '/dashboard/permissions/rules' },
+    ],
+  },
+  // {
+  //   // TODO: Add role based hiding of menu items
+  //   lable: 'Keystone Operations Group',
+  //   icon: IconHome, // TODO: find icon
+  //   initiallyOpened: false,
+  //   links: [
+  //     { label: 'Overview', link: '/dashboard/kog' },
+  //     { label: 'Roster', link: '/dashboard/kog/roster' },
+  //     { label: 'Events', link: '/dashboard/kog/events' },
+  //     { label: 'OCAP', link: '/dashboard/kog/ocap' },
+  //   ],
+  // },
+  {
+    label: 'Keystone Operations Group',
+    icon: IconSwords, // TODO: find icon
+    initiallyOpened: false,
+    links: [
+      { label: 'Overview', link: '/dashboard/kog' },
+      { label: 'Roster', link: '/dashboard/kog/roster' },
+      { label: 'Events', link: '/dashboard/kog/events' },
+      { label: 'OCAP', link: '/dashboard/kog/ocap' },
+    ],
+  },
+  {
+    label: 'Kaizen Troup',
+    icon: IconSword, // TODO: find icon
+    initiallyOpened: false,
+    links: [
+      { label: 'Overview', link: '/dashboard/kt' },
+      { label: 'Roster', link: '/dashboard/kt/roster' },
+      { label: 'Events', link: '/dashboard/kt/events' },
+      { label: 'OCAP', link: '/dashboard/kt/ocap' },
+    ],
+  },
+  {
+    label: 'Admin Panel',
+    icon: IconShield, // TODO: find icon
+    initiallyOpened: false,
+    links: [
+      { label: 'Overview', link: '/dashboard/admin' },
+      { label: 'Applications', link: '/dashboard/admin/apps' },
+      { label: 'Events', link: '/dashboard/admin/events' },
     ],
   },
 ];
