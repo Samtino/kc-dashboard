@@ -8,7 +8,7 @@ function UserCard({ user }: { user: User | null }) {
   return (
     <>
       <Avatar src={user?.avatar || null} radius="xl" />
-      <div style={{ flex: 1 }}>
+      <div className="usercard">
         <Text size="sm" fw={500}>
           {user?.name || 'Loading...'}
         </Text>
