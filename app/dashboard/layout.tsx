@@ -22,21 +22,23 @@ const mockdata = [
       { label: 'Rules', link: '/dashboard/permissions/rules' },
     ],
   },
-  // Menu example
-  // { label: 'Lable Name', icon: IconHere, link: '/dashboard' },
-  //
-  // Submenu example
-  // {
-  //   label: 'Menu Name',
-  //   icon: IconHere,
-  //   initiallyOpened: false,
-  //   links: [
-  //     { label: 'submenu1', link: '/dashboard/menuname' },
-  //     { label: 'SOPs', link: '/dashboard/menuname/sops' },
-  //     { label: 'Rules', link: '/dashboard/menuname/rules' },
-  //   ],
-  // },
 ];
+
+/* Menu example
+{ label: 'Lable Name', icon: IconHere, link: '/dashboard' },
+  
+// Submenu example
+{
+  label: 'Menu Name',
+  icon: IconHere,
+  initiallyOpened: false,
+  links: [
+    { label: 'submenu1', link: '/dashboard/menuname' },
+    { label: 'SOPs', link: '/dashboard/menuname/sops' },
+    { label: 'Rules', link: '/dashboard/menuname/rules' },
+  ],
+},
+*/
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [opened, { toggle }] = useDisclosure();
