@@ -60,7 +60,7 @@ export default function NavbarNested() {
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      // header={{ height: 60 }}
       navbar={{
         width: { base: 300, md: 350, lg: 300 },
         breakpoint: 'sm',
