@@ -68,7 +68,7 @@ export function LinksGroup({ icon: Icon, label, link, initiallyOpened, links }: 
               style={{
                 width: rem(16),
                 height: rem(16),
-                transform: opened ? 'rotate(-90deg)' : 'none',
+                transform: opened ? 'rotate(90deg)' : 'none',
               }}
             />
           )}

@@ -1,5 +1,5 @@
 import { UnstyledButton, Group, Avatar, Text, rem, Menu, Divider, Collapse } from '@mantine/core';
-import { IconChevronRight, IconChevronUp } from '@tabler/icons-react';
+import { IconChevronRight } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import classes from './UserButton.module.css';
@@ -48,15 +48,15 @@ export function UserButton() {
   function Chevron() {
     return (
       <>
-        {menuOpened ? (
-          <>
-            <IconChevronUp style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
-          </>
-        ) : (
-          <>
-            <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
-          </>
-        )}
+        <IconChevronRight
+          className={classes.chevron}
+          style={{
+            width: rem(10),
+            height: rem(10),
+            transform: menuOpened ? 'rotate(-90deg)' : 'rotate(0)',
+          }}
+          stroke={1.5}
+        />
       </>
     );
   }
@@ -65,11 +65,16 @@ export function UserButton() {
     return (
       <Collapse in={menuOpened} transitionDuration={200}>
         <Menu position="top">
-          <Menu.Item component={Link} href="/settings">
+          <Menu.Item className={classes.menu} component={Link} href="/settings">
             Settings
           </Menu.Item>
           <Divider />
-          <Menu.Item color="red" component={Link} href="/api/auth/discord/logout">
+          <Menu.Item
+            className={classes.menu}
+            color="red"
+            component={Link}
+            href="/api/auth/discord/logout"
+          >
             Logout
           </Menu.Item>
         </Menu>
@@ -98,10 +103,6 @@ export function UserButton() {
     return (
       <UnstyledButton className={classes.user}>
         <Group>
-          {/* <Avatar radius="xl" />
-          <Text size="sm" fw={500}>
-            Loading...
-          </Text> */}
           <UserCard user={null} />
           <Chevron />
         </Group>
@@ -113,31 +114,12 @@ export function UserButton() {
     return (
       <UnstyledButton className={classes.user}>
         <Group>
-          {/* <Avatar radius="xl" />
-          <Text size="sm" fw={500}>
-            Error loading user
-          </Text> */}
           <ErrorCard message="Please logout and login" />
           <Chevron />
         </Group>
       </UnstyledButton>
     );
   }
-
-  // if (!user) {
-  //   return (
-  //     <UnstyledButton className={classes.user}>
-  //       <Group>
-  //         {/* <Avatar radius="xl" />
-  //         <Text size="sm" fw={500}>
-  //           Error loading user
-  //         </Text> */}
-  //         <ErrorCard message="Failed to find user" />
-  //         <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
-  //       </Group>
-  //     </UnstyledButton>
-  //   );
-  // }
 
   return (
     <>
