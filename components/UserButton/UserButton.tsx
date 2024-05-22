@@ -1,6 +1,7 @@
-import { UnstyledButton, Group, Avatar, Text, rem } from '@mantine/core';
-import { IconChevronRight } from '@tabler/icons-react';
+import { UnstyledButton, Group, Avatar, Text, rem, Menu, Divider, Collapse } from '@mantine/core';
+import { IconChevronRight, IconChevronUp } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import classes from './UserButton.module.css';
 import { User } from '@/app/lib/types';
 
@@ -38,6 +39,43 @@ export function UserButton() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [menuOpened, setMenuOpened] = useState(false);
+
+  const userCardClick = () => {
+    setMenuOpened(!menuOpened);
+  };
+
+  function Chevron() {
+    return (
+      <>
+        {menuOpened ? (
+          <>
+            <IconChevronUp style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
+          </>
+        ) : (
+          <>
+            <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
+          </>
+        )}
+      </>
+    );
+  }
+
+  function PopupMenu() {
+    return (
+      <Collapse in={menuOpened} transitionDuration={200}>
+        <Menu position="top">
+          <Menu.Item component={Link} href="/settings">
+            Settings
+          </Menu.Item>
+          <Divider />
+          <Menu.Item color="red" component={Link} href="/api/auth/discord/logout">
+            Logout
+          </Menu.Item>
+        </Menu>
+      </Collapse>
+    );
+  }
 
   useEffect(() => {
     fetch('/api/user-data')
@@ -65,7 +103,7 @@ export function UserButton() {
             Loading...
           </Text> */}
           <UserCard user={null} />
-          <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
+          <Chevron />
         </Group>
       </UnstyledButton>
     );
@@ -80,7 +118,7 @@ export function UserButton() {
             Error loading user
           </Text> */}
           <ErrorCard message="Please logout and login" />
-          <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
+          <Chevron />
         </Group>
       </UnstyledButton>
     );
@@ -102,11 +140,14 @@ export function UserButton() {
   // }
 
   return (
-    <UnstyledButton className={classes.user}>
-      <Group>
-        <UserCard user={user} />
-        <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
-      </Group>
-    </UnstyledButton>
+    <>
+      <PopupMenu />
+      <UnstyledButton className={classes.user} onClick={userCardClick}>
+        <Group justify="space-between">
+          <UserCard user={user} />
+          <Chevron />
+        </Group>
+      </UnstyledButton>
+    </>
   );
 }
