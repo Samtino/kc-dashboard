@@ -66,7 +66,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Group justify="space-between">
               <Image component={NextImage} src={icon} alt="KC Logo" h={40} w={40}></Image>
               <h4>{currentPage}</h4>
-              <ColorSchemeToggle />
+              <ColorSchemeToggle radius={10} />
             </Group>
           </div>
 

@@ -25,7 +25,7 @@ import {
 import { IconSun, IconMoon } from '@tabler/icons-react';
 import classes from './ColorSchemeToggle.module.css';
 
-export function ColorSchemeToggle() {
+export function ColorSchemeToggle({ radius = 40 }: { radius?: number }) {
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
 
@@ -40,6 +40,7 @@ export function ColorSchemeToggle() {
           variant="default"
           size="xl"
           aria-label="Toggle color scheme"
+          radius={radius}
         >
           <IconSun className={cx(classes.icon, classes.light)} stroke={1.5} />
           <IconMoon className={cx(classes.icon, classes.dark)} stroke={1.5} />
