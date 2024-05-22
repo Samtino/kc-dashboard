@@ -1,6 +1,6 @@
 'use client';
 
-import { AppShell, Group, Code, ScrollArea, Image, Burger } from '@mantine/core';
+import { AppShell, Group, ScrollArea, Image, Burger } from '@mantine/core';
 import NextImage from 'next/image';
 import { IconLock, IconHome } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
@@ -8,6 +8,7 @@ import icon from '@/public/icon.png';
 import { UserButton } from '@/components/UserButton/UserButton';
 import { LinksGroup } from '@/components/NavbarLinksGroup/NavbarLinksGroup';
 import classes from './Dashboard.module.css';
+import { ColorSchemeToggle } from '@/components/ColorSchemeToggle/ColorSchemeToggle';
 
 const mockdata = [
   { label: 'Home', icon: IconHome, link: '/dashboard' },
@@ -46,6 +47,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AppShell
+      header={{ height: { base: 40 } }} // TODO: only show header on mobile
       navbar={{
         width: { base: 300, lg: 350 },
         breakpoint: 'sm',
@@ -53,14 +55,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }}
       withBorder={false}
     >
+      <AppShell.Header>
+        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+      </AppShell.Header>
       <AppShell.Navbar p="md">
         <nav className={classes.navbar}>
           <div className={classes.header}>
             <Group justify="space-between">
-              <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
               <Image component={NextImage} src={icon} alt="KC Logo" h={40} w={40}></Image>
               <h4>{currentPage}</h4>
-              <Code fw={700}>v0.1.0</Code>
+              <ColorSchemeToggle />
             </Group>
           </div>
 
