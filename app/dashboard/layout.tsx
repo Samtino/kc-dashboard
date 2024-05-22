@@ -3,13 +3,13 @@
 import { AppShell, Group, ScrollArea, Image, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import NextImage from 'next/image';
-import { IconLock, IconHome, IconSword, IconShield, IconSwords } from '@tabler/icons-react';
+import { IconLock, IconSword, IconShield, IconSwords, IconLayoutBoard } from '@tabler/icons-react';
 import { ColorSchemeToggle, LinksGroup, UserButton } from '@/components';
 import classes from './Dashboard.module.css';
 import icon from '@/public/icon.png';
 
 const mockdata = [
-  { label: 'Home', icon: IconHome, link: '/dashboard' },
+  { label: 'Dashboard', icon: IconLayoutBoard, link: '/dashboard' },
   {
     label: 'Permissions',
     icon: IconLock,
@@ -20,21 +20,9 @@ const mockdata = [
       { label: 'Rules', link: '/dashboard/permissions/rules' },
     ],
   },
-  // {
-  //   // TODO: Add role based hiding of menu items
-  //   lable: 'Keystone Operations Group',
-  //   icon: IconHome, // TODO: find icon
-  //   initiallyOpened: false,
-  //   links: [
-  //     { label: 'Overview', link: '/dashboard/kog' },
-  //     { label: 'Roster', link: '/dashboard/kog/roster' },
-  //     { label: 'Events', link: '/dashboard/kog/events' },
-  //     { label: 'OCAP', link: '/dashboard/kog/ocap' },
-  //   ],
-  // },
   {
     label: 'Keystone Operations Group',
-    icon: IconSwords, // TODO: find icon
+    icon: IconSwords,
     initiallyOpened: false,
     links: [
       { label: 'Overview', link: '/dashboard/kog' },
@@ -45,7 +33,7 @@ const mockdata = [
   },
   {
     label: 'Kaizen Troup',
-    icon: IconSword, // TODO: find icon
+    icon: IconSword,
     initiallyOpened: false,
     links: [
       { label: 'Overview', link: '/dashboard/kt' },
@@ -56,7 +44,7 @@ const mockdata = [
   },
   {
     label: 'Admin Panel',
-    icon: IconShield, // TODO: find icon
+    icon: IconShield,
     initiallyOpened: false,
     links: [
       { label: 'Overview', link: '/dashboard/admin' },
