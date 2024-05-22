@@ -1,0 +1,24 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+
+  .obtained {
+    background-color: green;
+  }
+
+  .notObtained {
+    background-color: red;
+  }
+}
+
+.table th {
+  background-color: blue;
+}
