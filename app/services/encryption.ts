@@ -8,9 +8,13 @@ export async function encrypt(payload: any) {
 }
 
 export async function decrypt(input: string): Promise<any> {
-  const { payload } = await jwtVerify(input, key, {
-    algorithms: ['HS256'],
-  });
+  try {
+    const { payload } = await jwtVerify(input, key, {
+      algorithms: ['HS256'],
+    });
 
-  return payload;
+    return payload;
+  } catch (error: any) {
+    throw new Error(`JWT verification failed: ${error.message}`);
+  }
 }
