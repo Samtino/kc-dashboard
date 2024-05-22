@@ -21,7 +21,7 @@ export function UserButton() {
           </Text>
         </div>
 
-        <IconChevronRight style={{ width: rem(14), height: rem(14) }} stroke={1.5} />
+        <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
       </Group>
     </UnstyledButton>
   );

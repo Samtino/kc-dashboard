@@ -1,56 +1,40 @@
 'use client';
 
-import { AppShell, Group, Code, ScrollArea, Image } from '@mantine/core';
+import { AppShell, Group, Code, ScrollArea, Image, Burger } from '@mantine/core';
 import NextImage from 'next/image';
-import {
-  IconNotes,
-  IconCalendarStats,
-  IconGauge,
-  IconPresentationAnalytics,
-  IconFileAnalytics,
-  IconAdjustments,
-  IconLock,
-} from '@tabler/icons-react';
+import { IconLock, IconHome } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import icon from '@/public/icon.png';
 import { UserButton } from '@/components/UserButton/UserButton';
-import { LinksGroup } from '@/components/LinksGroup/LinksGroup';
+import { LinksGroup } from '@/components/NavbarLinksGroup/NavbarLinksGroup';
 import classes from './Dashboard.module.css';
 
 const mockdata = [
-  { label: 'Dashboard', icon: IconGauge },
+  { label: 'Home', icon: IconHome, link: '/dashboard' },
   {
-    label: 'Market news',
-    icon: IconNotes,
+    label: 'Permissions',
+    icon: IconLock,
     initiallyOpened: true,
     links: [
-      { label: 'Overview', link: '/overview' },
-      { label: 'Forecasts', link: '/' },
-      { label: 'Outlook', link: '/' },
-      { label: 'Real time', link: '/' },
+      { label: 'Overview', link: '/dashboard/permissions' },
+      { label: 'SOPs', link: '/dashboard/permissions/sops' },
+      { label: 'Rules', link: '/dashboard/permissions/rules' },
     ],
   },
-  {
-    label: 'Releases',
-    icon: IconCalendarStats,
-    links: [
-      { label: 'Upcoming releases', link: '/' },
-      { label: 'Previous releases', link: '/' },
-      { label: 'Releases schedule', link: '/' },
-    ],
-  },
-  { label: 'Analytics', icon: IconPresentationAnalytics },
-  { label: 'Contracts', icon: IconFileAnalytics },
-  { label: 'Settings', icon: IconAdjustments },
-  {
-    label: 'Security',
-    icon: IconLock,
-    links: [
-      { label: 'Enable 2FA', link: '/' },
-      { label: 'Change password', link: '/' },
-      { label: 'Recovery codes', link: '/' },
-    ],
-  },
+  // Menu example
+  // { label: 'Lable Name', icon: IconHere, link: '/dashboard' },
+  //
+  // Submenu example
+  // {
+  //   label: 'Menu Name',
+  //   icon: IconHere,
+  //   initiallyOpened: false,
+  //   links: [
+  //     { label: 'submenu1', link: '/dashboard/menuname' },
+  //     { label: 'SOPs', link: '/dashboard/menuname/sops' },
+  //     { label: 'Rules', link: '/dashboard/menuname/rules' },
+  //   ],
+  // },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -58,26 +42,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const links = mockdata.map((item) => <LinksGroup {...item} key={item.label} />);
 
+  const currentPage = 'Dashboard'; // TODO: get current page from router
+
   return (
     <AppShell
-      // header={{ height: 60 }}
       navbar={{
-        width: { base: 300, md: 350, lg: 300 },
+        width: { base: 300, lg: 350 },
         breakpoint: 'sm',
         collapsed: { mobile: !opened },
       }}
       withBorder={false}
     >
-      {/* <AppShell.Header>
-        <span>Dashboard</span>
-      </AppShell.Header> */}
-
-      <AppShell.Navbar py="md" px={4}>
+      <AppShell.Navbar p="md">
         <nav className={classes.navbar}>
           <div className={classes.header}>
             <Group justify="space-between">
+              <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
               <Image component={NextImage} src={icon} alt="KC Logo" h={40} w={40}></Image>
-              <h1>Current Page</h1>
+              <h4>{currentPage}</h4>
               <Code fw={700}>v0.1.0</Code>
             </Group>
           </div>
