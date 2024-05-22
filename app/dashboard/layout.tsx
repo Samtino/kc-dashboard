@@ -1,14 +1,14 @@
 'use client';
 
 import { AppShell, Group, ScrollArea, Image, Burger } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import NextImage from 'next/image';
 import { IconLock, IconHome } from '@tabler/icons-react';
-import { useDisclosure } from '@mantine/hooks';
-import icon from '@/public/icon.png';
 import { UserButton } from '@/components/UserButton/UserButton';
 import { LinksGroup } from '@/components/NavbarLinksGroup/NavbarLinksGroup';
-import classes from './Dashboard.module.css';
 import { ColorSchemeToggle } from '@/components/ColorSchemeToggle/ColorSchemeToggle';
+import classes from './Dashboard.module.css';
+import icon from '@/public/icon.png';
 
 const mockdata = [
   { label: 'Home', icon: IconHome, link: '/dashboard' },
