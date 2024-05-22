@@ -1,6 +1,6 @@
 'use client';
 
-import { AppShell, Group, Code, ScrollArea, rem, Image } from '@mantine/core';
+import { AppShell, Group, Code, ScrollArea, Image } from '@mantine/core';
 import NextImage from 'next/image';
 import {
   IconNotes,
@@ -11,12 +11,11 @@ import {
   IconAdjustments,
   IconLock,
 } from '@tabler/icons-react';
+import { useDisclosure } from '@mantine/hooks';
 import icon from '@/public/icon.png';
 import { UserButton } from '@/components/UserButton/UserButton';
 import { LinksGroup } from '@/components/LinksGroup/LinksGroup';
-// import { Logo } from './Logo';
 import classes from './Dashboard.module.css';
-import { useDisclosure } from '@mantine/hooks';
 
 const mockdata = [
   { label: 'Dashboard', icon: IconGauge },
@@ -62,19 +61,24 @@ export default function NavbarNested() {
   return (
     <AppShell
       header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      padding="md"
+      navbar={{
+        width: { base: 300, md: 350, lg: 300 },
+        breakpoint: 'sm',
+        collapsed: { mobile: !opened },
+      }}
+      withBorder={false}
     >
-      <AppShell.Header>
+      {/* <AppShell.Header>
         <span>Dashboard</span>
-      </AppShell.Header>
+      </AppShell.Header> */}
 
       <AppShell.Navbar py="md" px={4}>
         <nav className={classes.navbar}>
           <div className={classes.header}>
             <Group justify="space-between">
               <Image component={NextImage} src={icon} alt="KC Logo" h={40} w={40}></Image>
-              <Code fw={700}>v3.1.2</Code>
+              <h1>Current Page</h1>
+              <Code fw={700}>v0.1.0</Code>
             </Group>
           </div>
 
@@ -87,6 +91,8 @@ export default function NavbarNested() {
           </div>
         </nav>
       </AppShell.Navbar>
+
+      <AppShell.Main>Page</AppShell.Main>
     </AppShell>
   );
 }
