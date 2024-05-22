@@ -4,9 +4,7 @@ import { AppShell, Group, ScrollArea, Image, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import NextImage from 'next/image';
 import { IconLock, IconHome } from '@tabler/icons-react';
-import { UserButton } from '@/components/UserButton/UserButton';
-import { LinksGroup } from '@/components/NavbarLinksGroup/NavbarLinksGroup';
-import { ColorSchemeToggle } from '@/components/ColorSchemeToggle/ColorSchemeToggle';
+import { ColorSchemeToggle, LinksGroup, UserButton } from '@/components';
 import classes from './Dashboard.module.css';
 import icon from '@/public/icon.png';
 

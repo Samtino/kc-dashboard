@@ -4,7 +4,7 @@ import { Image, Container, Title, Button, Group, Text, List, ThemeIcon, rem } fr
 import { IconCheck, IconBrandGithub, IconBrandDiscord } from '@tabler/icons-react';
 import logo from '@/public/icon.png';
 import classes from './Landing.module.css';
-import { ColorSchemeToggle } from '@/components/ColorSchemeToggle/ColorSchemeToggle';
+import { ColorSchemeToggle } from '@/components';
 
 export default function Landing() {
   return (
