@@ -4,6 +4,36 @@ import { useEffect, useState } from 'react';
 import classes from './UserButton.module.css';
 import { User } from '@/app/lib/types';
 
+function UserCard({ user }: { user: User | null }) {
+  return (
+    <>
+      <Avatar src={user?.avatar || null} radius="xl" />
+      <div style={{ flex: 1 }}>
+        <Text size="sm" fw={500}>
+          {user?.name || 'Loading...'}
+        </Text>
+        <Text c="dimmed" size="xs">
+          {user?.id || ''}
+        </Text>
+      </div>
+    </>
+  );
+}
+
+function ErrorCard({ message }: { message: string }) {
+  return (
+    <>
+      <Avatar radius="xl" />
+      <Text size="sm" fw={500}>
+        Error loading user
+      </Text>
+      <Text c="red" size="xs">
+        {message}
+      </Text>
+    </>
+  );
+}
+
 export function UserButton() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,40 +60,51 @@ export function UserButton() {
     return (
       <UnstyledButton className={classes.user}>
         <Group>
-          <Avatar radius="xl" />
+          {/* <Avatar radius="xl" />
           <Text size="sm" fw={500}>
             Loading...
-          </Text>
+          </Text> */}
+          <UserCard user={null} />
+          <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
         </Group>
       </UnstyledButton>
     );
   }
 
-  if (error || !user) {
+  if (error) {
     return (
       <UnstyledButton className={classes.user}>
         <Group>
-          <Avatar radius="xl" />
+          {/* <Avatar radius="xl" />
           <Text size="sm" fw={500}>
             Error loading user
-          </Text>
+          </Text> */}
+          <ErrorCard message="Please logout and login" />
+          <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
         </Group>
       </UnstyledButton>
     );
   }
+
+  // if (!user) {
+  //   return (
+  //     <UnstyledButton className={classes.user}>
+  //       <Group>
+  //         {/* <Avatar radius="xl" />
+  //         <Text size="sm" fw={500}>
+  //           Error loading user
+  //         </Text> */}
+  //         <ErrorCard message="Failed to find user" />
+  //         <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
+  //       </Group>
+  //     </UnstyledButton>
+  //   );
+  // }
 
   return (
     <UnstyledButton className={classes.user}>
       <Group>
-        <Avatar src={user.avatar} radius="xl" />
-        <div style={{ flex: 1 }}>
-          <Text size="sm" fw={500}>
-            {user.name}
-          </Text>
-          <Text c="dimmed" size="xs">
-            {user.id}
-          </Text>
-        </div>
+        <UserCard user={user} />
         <IconChevronRight style={{ width: rem(10), height: rem(10) }} stroke={1.5} />
       </Group>
     </UnstyledButton>
