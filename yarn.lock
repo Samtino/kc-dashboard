@@ -2919,7 +2919,7 @@
   dependencies:
     tslib "^2.4.0"
 
-"@tabler/icons-react@^3.0.0":
+"@tabler/icons-react@^3.5.0":
   version "3.5.0"
   resolved "https://registry.npmjs.org/@tabler/icons-react/-/icons-react-3.5.0.tgz"
   integrity sha512-bn05XKZV3ZfOv5Jr1FCTmVPOQGBVJoA4NefrnR919rqg6WGXAa08NovONHJGSuMxXUMV3b9Cni85diIW/E9yuw==

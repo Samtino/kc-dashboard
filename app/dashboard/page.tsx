@@ -1,59 +1,91 @@
 'use client';
 
-import { AppShell, Burger, Group, UnstyledButton, Image, Avatar, Divider } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { AppShell, Group, Code, ScrollArea, rem, Image } from '@mantine/core';
 import NextImage from 'next/image';
+import {
+  IconNotes,
+  IconCalendarStats,
+  IconGauge,
+  IconPresentationAnalytics,
+  IconFileAnalytics,
+  IconAdjustments,
+  IconLock,
+} from '@tabler/icons-react';
+import icon from '@/public/icon.png';
+import { UserButton } from '@/components/UserButton/UserButton';
+import { LinksGroup } from '@/components/LinksGroup/LinksGroup';
+// import { Logo } from './Logo';
 import classes from './Dashboard.module.css';
-import logo from '@/public/icon.png';
+import { useDisclosure } from '@mantine/hooks';
 
-export default function Dashboard() {
+const mockdata = [
+  { label: 'Dashboard', icon: IconGauge },
+  {
+    label: 'Market news',
+    icon: IconNotes,
+    initiallyOpened: true,
+    links: [
+      { label: 'Overview', link: '/overview' },
+      { label: 'Forecasts', link: '/' },
+      { label: 'Outlook', link: '/' },
+      { label: 'Real time', link: '/' },
+    ],
+  },
+  {
+    label: 'Releases',
+    icon: IconCalendarStats,
+    links: [
+      { label: 'Upcoming releases', link: '/' },
+      { label: 'Previous releases', link: '/' },
+      { label: 'Releases schedule', link: '/' },
+    ],
+  },
+  { label: 'Analytics', icon: IconPresentationAnalytics },
+  { label: 'Contracts', icon: IconFileAnalytics },
+  { label: 'Settings', icon: IconAdjustments },
+  {
+    label: 'Security',
+    icon: IconLock,
+    links: [
+      { label: 'Enable 2FA', link: '/' },
+      { label: 'Change password', link: '/' },
+      { label: 'Recovery codes', link: '/' },
+    ],
+  },
+];
+
+export default function NavbarNested() {
   const [opened, { toggle }] = useDisclosure();
 
-  function ButtonRow({ dividerDirection }) {
-    return (
-      <>
-        <UnstyledButton className={classes.control}>Dashboard</UnstyledButton>
-        <Divider orientation={dividerDirection} />
-        <UnstyledButton className={classes.control}>Permissions</UnstyledButton>
-        <Divider orientation={dividerDirection} />
-        <UnstyledButton className={classes.control}>Forums</UnstyledButton>
-        <Divider orientation={dividerDirection} />
-        <UnstyledButton className={classes.control}>Support</UnstyledButton>
-      </>
-    );
-  }
+  const links = mockdata.map((item) => <LinksGroup {...item} key={item.label} />);
 
   return (
     <AppShell
       header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: 'sm', collapsed: { desktop: true, mobile: !opened } }}
+      navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md">
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <Group justify="space-between" style={{ flex: 1 }}>
-            <Image component={NextImage} src={logo} alt="KC Logo" h={40} />
-            <Group ml="xl" gap={0} visibleFrom="sm">
-              <ButtonRow dividerDirection="vertical" />
-              <Avatar src={null} className={classes.avatar} />
-              {/* TODO: add dropdown for settings and signout */}
-            </Group>
-          </Group>
-        </Group>
+        <span>Dashboard</span>
       </AppShell.Header>
 
       <AppShell.Navbar py="md" px={4}>
-        <div className={classes.navbar}>
-          <div>
-            <ButtonRow dividerDirection="horizontal" />
+        <nav className={classes.navbar}>
+          <div className={classes.header}>
+            <Group justify="space-between">
+              <Image component={NextImage} src={icon} alt="KC Logo" h={40} w={40}></Image>
+              <Code fw={700}>v3.1.2</Code>
+            </Group>
           </div>
-          <div>
-            <UnstyledButton className={classes.control}>Settings</UnstyledButton>
-            <Divider orientation="horizontal" />
-            <UnstyledButton className={classes.control}>Logout</UnstyledButton>
+
+          <ScrollArea className={classes.links}>
+            <div className={classes.linksInner}>{links}</div>
+          </ScrollArea>
+
+          <div className={classes.footer}>
+            <UserButton />
           </div>
-        </div>
+        </nav>
       </AppShell.Navbar>
     </AppShell>
   );
