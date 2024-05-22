@@ -26,7 +26,7 @@ const mockdata = [
 
 /* Menu example
 { label: 'Lable Name', icon: IconHere, link: '/dashboard' },
-  
+
 // Submenu example
 {
   label: 'Menu Name',
