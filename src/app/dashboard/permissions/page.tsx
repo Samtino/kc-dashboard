@@ -43,6 +43,7 @@ function PermissionStatus({
     case 'blacklisted':
       color = 'black';
       buttonLabel = 'Blacklisted';
+      tooltipLabel = `You have been blacklisted for: ${reason}.`;
       disabled = true;
       break;
     default:
