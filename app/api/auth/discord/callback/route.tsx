@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { encrypt } from '@/app/services/encryption';
-import { User } from '@/app/lib/types';
+import { User } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

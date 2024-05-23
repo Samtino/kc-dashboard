@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button, Code, Container, Notification, Table, Tooltip } from '@mantine/core';
-import type { permission, User } from '@/app/lib/types';
+import type { permission, User } from '@/lib/types';
 import classes from './Permissions.module.css';
 
 function PermissionStatus({

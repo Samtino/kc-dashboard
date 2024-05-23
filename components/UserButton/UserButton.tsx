@@ -3,7 +3,7 @@ import { IconChevronRight } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import classes from './UserButton.module.css';
-import { User } from '@/app/lib/types';
+import { User } from '@/lib/types';
 
 function UserCard({ user }: { user: User | null }) {
   return (

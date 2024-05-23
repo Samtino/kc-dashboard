@@ -8,7 +8,7 @@ import { IconLock, IconSword, IconShield, IconSwords, IconLayoutBoard } from '@t
 import { ColorSchemeToggle, LinksGroup, UserButton } from '@/components';
 import classes from './Dashboard.module.css';
 import icon from '@/public/icon.png';
-import { User } from '../lib/types';
+import { User } from '@/lib/types';
 
 const mockdata = [
   { label: 'Dashboard', icon: IconLayoutBoard, link: '/dashboard' },
