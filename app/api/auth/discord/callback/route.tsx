@@ -54,16 +54,23 @@ export async function GET(request: NextRequest) {
       id: guildData.user.id,
       name: guildData.nick || guildData.user.global_name || guildData.username,
       avatar: avatarUrl,
-      isAdmin: false,
-      isCS: false,
     };
 
     guildData.roles.forEach((role: string) => {
-      if (role === process.env.CS_ROLE_ID) {
-        user.isCS = true;
-        user.isAdmin = true;
-      } else if (role === process.env.ADMIN_ROLE_ID) {
-        user.isAdmin = true;
+      switch (role) {
+        case process.env.CS_ROLE_ID:
+          user.isCS = true;
+        /* falls through */
+        case process.env.ADMIN_ROLE_ID:
+          user.isAdmin = true;
+          break;
+        case process.env.KOG_ROLE_ID:
+        case process.env.MPU_ROLE_ID:
+          user.isKOG = true;
+          break;
+        case process.env.KT_ROLE_ID:
+          user.isKT = true;
+          break;
       }
     });
 

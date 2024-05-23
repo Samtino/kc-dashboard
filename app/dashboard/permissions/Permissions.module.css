@@ -22,3 +22,17 @@
 .table th {
   background-color: blue;
 }
+
+.notificationContainer {
+  position: absolute;
+  top: 40px;
+  left: 75%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .notificationContainer {
+    left: 50%;
+  }
+}
