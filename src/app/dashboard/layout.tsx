@@ -114,7 +114,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AppShell
-      header={{ height: { base: 40 } }} // TODO: only show header on mobile
+      // header={{ height: { base: 40 } }} // TODO: only show header on mobile
       navbar={{
         width: { base: 300, lg: 350 },
         breakpoint: 'sm',
@@ -122,9 +122,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }}
       withBorder={false}
     >
-      <AppShell.Header>
-        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-      </AppShell.Header>
+      <Burger
+        className={classes.burger}
+        opened={opened}
+        onClick={toggle}
+        hiddenFrom="sm"
+        size="sm"
+      />
+      {/* <AppShell.Header>
+      </AppShell.Header> */}
       <AppShell.Navbar p="md">
         <nav className={classes.navbar}>
           <div className={classes.header}>
