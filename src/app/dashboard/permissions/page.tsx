@@ -20,7 +20,6 @@ function PermissionStatus({
     disabled: false,
   };
 
-  // FIXME: Implement the rest of the status types
   switch (type) {
     case 'passed':
       color = 'green';
@@ -30,7 +29,7 @@ function PermissionStatus({
     case 'failed':
       color = 'red';
       buttonLabel = 'Failed';
-      tooltipLabel = 'You can reapply now!';
+      tooltipLabel = 'Your reapply cooldown has expired!';
       if ((reapplyDate || 0) > new Date(Date.now())) {
         disabled = true;
         tooltipLabel = `Failed for ${reason}. You can reapply at: ${reapplyDate?.toLocaleString()}`;
@@ -40,7 +39,6 @@ function PermissionStatus({
       color = 'yellow';
       buttonLabel = 'Pending';
       tooltipLabel = 'You currently have a pending application.'; // TODO: Add way to cancel application
-      disabled = true;
       break;
     case 'blacklisted':
       color = 'black';
@@ -50,9 +48,7 @@ function PermissionStatus({
     default:
       color = 'gray';
       buttonLabel = 'N/A';
-      if (!permission.assetPerm) {
-        tooltipLabel = 'You have not applied for this permission yet.';
-      }
+      tooltipLabel = 'You have not applied for this permission yet.';
       break;
   }
 
@@ -86,7 +82,7 @@ export default function PermissionsPage() {
   const placeholder: permission[] = [
     new Permission(1, 'Company Commander', 100, false, '6-6'),
     new Permission(2, 'Platoon Leader', 50, false, '1-6'),
-    new Permission(3, 'Platoon TACP', 100, true),
+    new Permission(3, 'Platoon TACP', 100, false),
     new Permission(4, 'Platoon Medic', 50, false, '1-9'),
     new Permission(5, 'Squad Leader / Support Team Leader', 50, false),
     new Permission(6, 'Banshee', 50, true, undefined, [4]),
@@ -125,11 +121,24 @@ export default function PermissionsPage() {
   placeholder[2] = {
     ...placeholder[2],
     status: {
-      type: 'pending',
+      type: 'failed',
+      reviewer: {
+        id: '1234',
+        name: 'Reviewer Name',
+        avatar: 'https://cdn.discordapp.com/avatars/1234/1234.png',
+      },
+      reason: 'Reason for failure',
+      reapplyDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
     },
   };
   placeholder[3] = {
     ...placeholder[3],
+    status: {
+      type: 'pending',
+    },
+  };
+  placeholder[4] = {
+    ...placeholder[4],
     status: {
       type: 'blacklisted',
       reason: 'Reason for blacklisting',
@@ -164,11 +173,24 @@ export default function PermissionsPage() {
   placeholder[7] = {
     ...placeholder[7],
     status: {
-      type: 'pending',
+      type: 'failed',
+      reviewer: {
+        id: '1234',
+        name: 'Reviewer Name',
+        avatar: 'https://cdn.discordapp.com/avatars/1234/1234.png',
+      },
+      reason: 'Reason for failure',
+      reapplyDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
     },
   };
   placeholder[8] = {
     ...placeholder[8],
+    status: {
+      type: 'pending',
+    },
+  };
+  placeholder[9] = {
+    ...placeholder[9],
     status: {
       type: 'blacklisted',
       reason: 'Reason for blacklisting',
