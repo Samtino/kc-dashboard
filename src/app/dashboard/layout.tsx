@@ -5,9 +5,9 @@ import { AppShell, Group, ScrollArea, Image, Burger, Loader, Center } from '@man
 import { useDisclosure } from '@mantine/hooks';
 import NextImage from 'next/image';
 import { IconLock, IconSword, IconShield, IconSwords, IconLayoutBoard } from '@tabler/icons-react';
-import { ColorSchemeToggle, LinksGroup, UserButton } from '@/components';
+import { ColorSchemeToggle, LinksGroup, UserButton } from '@/src/components';
 import classes from './Dashboard.module.css';
-import icon from '@/public/icon.png';
+import icon from '@/src/public/icon.png';
 import { User } from '@/lib/types';
 
 const mockdata = [

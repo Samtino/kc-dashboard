@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { decrypt } from '@/app/services/encryption';
+import { decrypt } from '@/src/app/services/encryption';
 import { User } from '@/lib/types';
 
 export async function GET() {

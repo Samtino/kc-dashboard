@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { encrypt } from '@/app/services/encryption';
+import { encrypt } from '@/src/app/services/encryption';
 import { User } from '@/lib/types';
 
 export async function GET(request: NextRequest) {

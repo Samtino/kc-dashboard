@@ -2,9 +2,9 @@
 
 import { Image, Container, Title, Button, Group, Text, List, ThemeIcon, rem } from '@mantine/core';
 import { IconCheck, IconBrandGithub, IconBrandDiscord } from '@tabler/icons-react';
-import logo from '@/public/icon.png';
+import logo from '@/src/public/icon.png';
 import classes from './Landing.module.css';
-import { ColorSchemeToggle } from '@/components';
+import { ColorSchemeToggle } from '@/src/components';
 
 export default function Landing() {
   return (
