@@ -7,6 +7,7 @@ export type User =
       isKT?: boolean;
       isAdmin?: boolean;
       isCS?: boolean;
+      isSysAdmin?: boolean;
       permissions?: Permission[];
     }
   | undefined;

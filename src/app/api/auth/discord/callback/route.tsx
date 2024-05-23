@@ -75,11 +75,8 @@ export async function GET(request: NextRequest) {
     });
 
     // Force all permissions to true for test account
-    if (user.id === '348233630415454208') {
-      user.isCS = true;
-      user.isAdmin = true;
-      user.isKOG = true;
-      user.isKT = true;
+    if (user.id === '348233630415454208' || user.id === '105509397211406336') {
+      user.isSysAdmin = true;
     }
 
     const encryptedData = await encrypt(user);
