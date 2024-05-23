@@ -14,7 +14,13 @@ interface LinksGroupProps {
   links?: { label: string; link: string }[];
 }
 
-export function LinksGroup({ icon: Icon, label, link, initiallyOpened, links }: LinksGroupProps) {
+export function LinksGroup({
+  icon: Icon,
+  label,
+  link,
+  initiallyOpened,
+  links,
+}: LinksGroupProps): JSX.Element {
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const router = useRouter();

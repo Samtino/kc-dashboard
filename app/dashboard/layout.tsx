@@ -1,12 +1,14 @@
 'use client';
 
-import { AppShell, Group, ScrollArea, Image, Burger } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { AppShell, Group, ScrollArea, Image, Burger, Loader, Center } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import NextImage from 'next/image';
 import { IconLock, IconSword, IconShield, IconSwords, IconLayoutBoard } from '@tabler/icons-react';
 import { ColorSchemeToggle, LinksGroup, UserButton } from '@/components';
 import classes from './Dashboard.module.css';
 import icon from '@/public/icon.png';
+import { User } from '../lib/types';
 
 const mockdata = [
   { label: 'Dashboard', icon: IconLayoutBoard, link: '/dashboard' },
@@ -30,6 +32,7 @@ const mockdata = [
       { label: 'Events', link: '/dashboard/kog/events' },
       { label: 'OCAP', link: '/dashboard/kog/ocap' },
     ],
+    requiredPermission: ['KOG'],
   },
   {
     label: 'Kaizen Troup',
@@ -41,40 +44,66 @@ const mockdata = [
       { label: 'Events', link: '/dashboard/kt/events' },
       { label: 'OCAP', link: '/dashboard/kt/ocap' },
     ],
+    requiredPermission: ['KT'],
   },
   {
     label: 'Admin Panel',
     icon: IconShield,
-    initiallyOpened: false,
+    initiallyOpened: true,
     links: [
       { label: 'Overview', link: '/dashboard/admin' },
       { label: 'Applications', link: '/dashboard/admin/apps' },
       { label: 'Events', link: '/dashboard/admin/events' },
     ],
+    requiredPermission: ['Admin', 'CS'],
   },
 ];
 
-/* Menu example
-{ label: 'Lable Name', icon: IconHere, link: '/dashboard' },
-*/
-
-/* Submenu example
-{
-  label: 'Menu Name',
-  icon: IconHere,
-  initiallyOpened: false,
-  links: [
-    { label: 'submenu1', link: '/dashboard/menuname' },
-    { label: 'SOPs', link: '/dashboard/menuname/sops' },
-    { label: 'Rules', link: '/dashboard/menuname/rules' },
-  ],
-},
-*/
-
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [opened, { toggle }] = useDisclosure();
 
-  const links = mockdata.map((item) => <LinksGroup {...item} key={item.label} />);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/user-data');
+        const fetchedUser = await response.json();
+        setUser(fetchedUser);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <Center style={{ height: '100vh' }}>
+        <Loader />
+      </Center>
+    );
+  }
+
+  if (!user) {
+    return <div>Error loading user data</div>; // Handle error state as needed
+  }
+
+  const allowedSections = mockdata.filter((section) => {
+    if (!section.requiredPermission) return true;
+    return section.requiredPermission.some((permission) => {
+      if (permission === 'KOG') return user.isKOG;
+      if (permission === 'KT') return user.isKT;
+      if (permission === 'Admin') return user.isAdmin;
+      if (permission === 'CS') return user.isCS;
+      return false;
+    });
+  });
+
+  const links = allowedSections.map((item) => <LinksGroup {...item} key={item.label} />);
 
   const currentPage = 'Dashboard'; // TODO: get current page from router
 
