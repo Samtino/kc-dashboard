@@ -25,14 +25,16 @@
 
 .notificationContainer {
   position: absolute;
-  top: 40px;
-  left: 75%;
-  transform: translateX(-50%);
-  z-index: 1;
+  top: 20px;
+  right: 20px;
+  width: 400px;
+  z-index: 1000;
 }
 
 @media (max-width: 768px) {
   .notificationContainer {
-    left: 50%;
+    position: relative;
+    right: 0;
+    width: 100%;
   }
 }

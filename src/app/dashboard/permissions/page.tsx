@@ -200,7 +200,7 @@ export default function PermissionsPage() {
 
   return (
     <div style={{ position: 'relative' }}>
-      <Container hidden={opened} w={400} className={classes.notificationContainer}>
+      <Container hidden={opened} className={classes.notificationContainer}>
         <Notification
           title="Asset Exams Status"
           color={assetExams.color}
