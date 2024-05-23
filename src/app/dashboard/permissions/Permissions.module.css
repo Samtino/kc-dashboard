@@ -25,16 +25,20 @@
 
 .notificationContainer {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 400px;
+  bottom: 40px;
+  right: 40px;
+  width: 480px;
   z-index: 1000;
+
+  .closeButton {
+    outline: 2px solid grey;
+    outline-offset: -2px;
+  }
 }
 
 @media (max-width: 768px) {
   .notificationContainer {
-    position: relative;
-    right: 0;
+    right: 0px;
     width: 100%;
   }
 }

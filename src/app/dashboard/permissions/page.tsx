@@ -199,12 +199,13 @@ export default function PermissionsPage() {
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div>
       <Container hidden={opened} className={classes.notificationContainer}>
         <Notification
           title="Asset Exams Status"
           color={assetExams.color}
           onClick={() => setOpened(!opened)}
+          classNames={{ closeButton: classes.closeButton }}
         >
           Asset exams are currently {assetExams.status ? 'open' : 'closed'}!
           <br />
