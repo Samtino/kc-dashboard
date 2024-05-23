@@ -23,7 +23,7 @@ const mockdata = [
     ],
   },
   {
-    label: 'Keystone Operations Group',
+    label: 'KOG',
     icon: IconSwords,
     initiallyOpened: false,
     links: [
@@ -35,7 +35,7 @@ const mockdata = [
     requiredPermission: ['KOG'],
   },
   {
-    label: 'Kaizen Troup',
+    label: 'KT',
     icon: IconSword,
     initiallyOpened: false,
     links: [
