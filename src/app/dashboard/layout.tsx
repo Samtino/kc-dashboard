@@ -69,6 +69,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       try {
         const response = await fetch('/api/user-data');
         const fetchedUser = await response.json();
+
+        if (fetchedUser.error) {
+          throw new Error(fetchedUser.error);
+        }
+
         setUser(fetchedUser);
       } catch (error) {
         console.error(error);
