@@ -5,8 +5,7 @@ import { User } from '@/lib/types';
 
 async function getUser(req: NextRequest) {
   try {
-    const currentUserEncryped = (await req.cookies.get('user')?.value) as string;
-    const token = currentUserEncryped.substring(1, currentUserEncryped.length - 1);
+    const token = (await req.cookies.get('user')?.value) as string;
     const currentUser = await decrypt(token);
 
     return currentUser;

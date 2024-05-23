@@ -11,14 +11,12 @@ export async function GET() {
       return NextResponse.json({ error: 'No key provided' }, { status: 400 });
     }
 
-    const encryptedData = cookies().get('user')?.value as string;
-    if (!encryptedData) {
+    const token = cookies().get('user')?.value as string;
+    if (!token) {
       return NextResponse.json({ error: 'No user cookie found' }, { status: 404 });
     }
 
-    const token = encryptedData.substring(1, encryptedData.length - 1);
     const user: User = await decrypt(token);
-
     if (!user) {
       return NextResponse.json({ error: 'No user data found' }, { status: 404 });
     }

@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
     }
 
     const encryptedData = await encrypt(user);
-    response.cookies.set('user', JSON.stringify(encryptedData), {
+    response.cookies.set('user', encryptedData, {
       path: '/',
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',

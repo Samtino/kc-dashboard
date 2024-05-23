@@ -69,12 +69,7 @@ export function UserButton() {
             Settings
           </Menu.Item>
           <Divider />
-          <Menu.Item
-            className={classes.menu}
-            color="red"
-            component={Link}
-            href="/api/auth/discord/logout"
-          >
+          <Menu.Item className={classes.menu} color="red" component={Link} href="/api/auth/logout">
             Logout
           </Menu.Item>
         </Menu>
