@@ -151,7 +151,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
       </AppShell.Navbar>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main hidden={opened}>{children}</AppShell.Main>
     </AppShell>
   );
 }
