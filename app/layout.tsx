@@ -13,6 +13,7 @@ export default function RootLayout({ children }: { children: any }) {
   return (
     <html lang="en">
       <head>
+        <script src="http://localhost:8097" async></script>
         <ColorSchemeScript />
         <link rel="shortcut icon" href="/icon.png" />
         <meta
