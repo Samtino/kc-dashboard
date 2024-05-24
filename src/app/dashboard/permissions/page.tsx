@@ -236,8 +236,6 @@ export default function PermissionsPage() {
         </Notification>
       </Container>
 
-      <br />
-
       <div>
         <h1>Permissions Overview</h1>
         <p>Work in progress!</p>
