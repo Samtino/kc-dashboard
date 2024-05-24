@@ -48,7 +48,6 @@ export default function Landing() {
             </Button> */}
             <Button
               component="a"
-              // target='_blank'
               href="/api/auth/discord/login"
               leftSection={<IconBrandDiscord />}
               radius="xl"
@@ -73,7 +72,7 @@ export default function Landing() {
 
       <Button
         component="a"
-        // target='_blank'
+        target="_blank"
         href="https://github.com/Samtino/kc-dashboard/issues"
         leftSection={<IconBrandGithub />}
         radius="xl"
