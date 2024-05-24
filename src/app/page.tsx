@@ -63,13 +63,6 @@ export default function Landing() {
         <Image src={logo.src} className={classes.image} />
       </div>
 
-      {/* <iframe
-        src="https://github.com/Samtino/kc-dashboard/issues"
-        title="GitHub Issues"
-        // style={{ width: '100%', height: '600px', border: 'none' }}
-      /> */}
-      {/* <Button variant="link" radius="xl" size="md" className={classes.control}> */}
-
       <Button
         component="a"
         target="_blank"
