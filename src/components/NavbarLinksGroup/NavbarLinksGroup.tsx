@@ -38,10 +38,6 @@ export function LinksGroup({
       key={link.label}
       onClick={() => handleNavigation(link.link)}
       role="button"
-      tabIndex={0}
-      onKeyPress={(event) => {
-        if (event.key === 'Enter') handleNavigation(link.link);
-      }}
       style={{ cursor: 'pointer' }}
     >
       {link.label}
