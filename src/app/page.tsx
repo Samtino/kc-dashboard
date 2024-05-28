@@ -2,6 +2,7 @@
 
 import { Image, Container, Title, Button, Group, Text, List, ThemeIcon, rem } from '@mantine/core';
 import { IconCheck, IconBrandGithub, IconBrandDiscord } from '@tabler/icons-react';
+import Link from 'next/link';
 import logo from '@/src/public/icon.png';
 import classes from './Landing.module.css';
 import { ColorSchemeToggle } from '@/src/components';
@@ -40,14 +41,8 @@ export default function Landing() {
           </List>
 
           <Group mt={30}>
-            {/* <Button radius="xl" size="md" className={classes.control}>
-              Get started
-            </Button>
-            <Button variant="default" radius="xl" size="md" className={classes.control}>
-              Source code
-            </Button> */}
             <Button
-              component="a"
+              component={Link}
               href="/api/auth/discord/login"
               leftSection={<IconBrandDiscord />}
               radius="xl"
