@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { Button, Code, Container, Notification, Table, Tooltip } from '@mantine/core';
-import type { permission, User } from '@/lib/types';
+import type { permission } from '@/lib/types';
 import classes from './Permissions.module.css';
+
+// TODO: Add real data from the DB
 
 function PermissionStatus({
   permission,
@@ -221,6 +223,38 @@ export default function PermissionsPage() {
     assetExams.message = 'Please wait for the next asset exams cycle to apply.';
   }
 
+  const permissionNames: Record<number, string> = {
+    1: 'Company Commander',
+    2: 'Platoon Leader',
+    3: 'Platoon TACP',
+    4: 'Platoon Medic',
+    5: 'Squad Leader / Support Team Leader',
+    6: 'Banshee',
+    7: 'Butcher',
+    8: 'Phantom',
+    9: 'Rotary Logistics',
+    10: 'Rotary CAS',
+    11: 'Fixed Wing CAS',
+  };
+
+  const rows = placeholder.map((item) => (
+    <Table.Tr key={item.name}>
+      <Table.Td>{item.name}</Table.Td>
+      <Table.Td>{item.requiredHours}</Table.Td>
+      <Table.Td>
+        {item.requiredPerms?.map((perm) => (
+          <>
+            <Code key={perm}>{permissionNames[perm]}</Code>
+            <br />
+          </>
+        ))}
+      </Table.Td>
+      <Table.Td>
+        <PermissionStatus permission={item} examStatus={assetExams.status} />
+      </Table.Td>
+    </Table.Tr>
+  ));
+
   return (
     <div>
       <Container hidden={opened} className={classes.notificationContainer}>
@@ -229,6 +263,7 @@ export default function PermissionsPage() {
           color={assetExams.color}
           onClick={() => setOpened(!opened)}
           classNames={{ closeButton: classes.closeButton }}
+          m={20}
         >
           Asset exams are currently {assetExams.status ? 'open' : 'closed'}!
           <br />
@@ -243,30 +278,19 @@ export default function PermissionsPage() {
 
       <br />
 
-      <Container size="lg" h="100%">
-        <Table className={classes.table} striped highlightOnHover>
-          <thead>
-            <tr>
-              <th>Permission</th>
-              <th>Required Hours</th>
-              <th>Obtained</th>
-            </tr>
-          </thead>
-          <tbody>
-            {placeholder.map((permission: permission) => (
-              <tr key={permission.id}>
-                <td width={200}>{permission.name}</td>
-                <td width={20}>
-                  <Code>{permission.requiredHours}</Code>
-                </td>
-                <td width={200}>
-                  <PermissionStatus permission={permission} examStatus={assetExams.status} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
+      <Table.ScrollContainer minWidth={800}>
+        <Table verticalSpacing="sm">
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Permission</Table.Th>
+              <Table.Th>Required Hours</Table.Th>
+              <Table.Th>Required Perms</Table.Th>
+              <Table.Th>Status</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>{rows}</Table.Tbody>
         </Table>
-      </Container>
+      </Table.ScrollContainer>
     </div>
   );
 }
