@@ -175,16 +175,10 @@ function GetActionButton({ actionType }: { actionType: string }) {
 
   return (
     <>
-      <ExamModal hidden={hidden} toggle={toggle} title={label} />
-      <ActionIcon
-        variant={variant}
-        color={color}
-        radius="lg"
-        onClick={() => {
-          toggle();
-          console.log('Pressed button');
-        }}
-      >
+      <ExamModal hidden={hidden} toggle={toggle} title={label}>
+        <p>Modal content</p>
+      </ExamModal>
+      <ActionIcon variant={variant} color={color} radius="lg" onClick={toggle}>
         <Tooltip label={label} offset={10} position="left">
           <IconComponent style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
         </Tooltip>
