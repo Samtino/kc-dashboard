@@ -1,31 +1,36 @@
 'use client';
 
 import { useState } from 'react';
-import classes from './Permissions.module.css';
+import { Code, Container, Notification } from '@mantine/core';
 import { PermissionsTable } from '@/src/components/PermissionsTable/PermissionsTable';
+import classes from './Permissions.module.css';
 
 // TODO: Add real data from the DB
-
 export default function PermissionsPage() {
-  // const [opened, setOpened] = useState(false);
+  // const [modalOpened, { toggle: modalToggle }] = useDisclosure();
+  const [bannerOpened, setBannerOpened] = useState(false);
+
+  const assetExams = {
+    status: false,
+    endDate: new Date('2024-06-20'),
+    color: 'red',
+  };
 
   return (
     <div>
-      {/* TODO: Re-implement the asset exams banner
-
-      <Container hidden={opened} className={classes.notificationContainer}>
+      <Container hidden={bannerOpened} className={classes.notificationContainer}>
         <Notification
           title="Asset Exams Status"
           color={assetExams.color}
-          onClick={() => setOpened(!opened)}
+          onClick={() => setBannerOpened(!bannerOpened)}
           classNames={{ closeButton: classes.closeButton }}
           m={20}
         >
-          Asset exams are currently {assetExams.status ? 'open' : 'closed'}!
+          Asset exams are currently <Code>{assetExams.status ? 'open' : 'closed'}</Code>!
           <br />
-          {assetExams.message}
+          They close at <Code>{assetExams.endDate.toLocaleString()}</Code>
         </Notification>
-      </Container> */}
+      </Container>
 
       <div>
         <h1>Permissions Overview</h1>

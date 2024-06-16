@@ -1,5 +1,7 @@
 import { ActionIcon, Badge, Center, Group, Paper, rem, Table, Tooltip } from '@mantine/core';
 import { Icon, IconPencil, IconSend, IconTrash, IconZoom } from '@tabler/icons-react';
+import { useDisclosure } from '@mantine/hooks';
+import { ExamModal } from '../ExamModal/ExamModal';
 
 // TODO: replace dummy data with real data from the DB
 type Perm = {
@@ -95,7 +97,7 @@ const statusColors: Record<string, string> = {
   none: 'gray',
 };
 
-function getStrikeBadges(strikes: Perm['strikes']) {
+function GetStrikeBadges({ strikes }: { strikes: Perm['strikes'] }) {
   const warningBadge = (
     <Badge color={strikes?.warning ? 'yellow' : 'gray'} variant="filled" circle>
       W
@@ -121,7 +123,7 @@ function getStrikeBadges(strikes: Perm['strikes']) {
   );
 }
 
-function getPrereqs(prereqs: Perm['prereqs']) {
+function GetPrereqs({ prereqs }: { prereqs: Perm['prereqs'] }) {
   if (!prereqs) {
     return <Badge color="gray">None</Badge>;
   }
@@ -134,7 +136,7 @@ function getPrereqs(prereqs: Perm['prereqs']) {
   ));
 }
 
-function getActionButton(actionType: string) {
+function GetActionButton({ actionType }: { actionType: string }) {
   const actionConfig: Record<
     string,
     { label: string; icon: Icon; color: string; variant: string }
@@ -168,71 +170,99 @@ function getActionButton(actionType: string) {
   const action = actionConfig[actionType];
   if (!action) return null;
 
-  const IconComponent = action.icon;
+  const { icon: IconComponent, variant, color, label } = action;
+  const [hidden, { toggle }] = useDisclosure();
 
   return (
-    <ActionIcon variant={action.variant} color={action.color} radius="lg">
-      <Tooltip label={action.label} offset={10} position="left">
-        <IconComponent style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-      </Tooltip>
-    </ActionIcon>
+    <>
+      <ExamModal hidden={hidden} toggle={toggle} title={label} />
+      <ActionIcon
+        variant={variant}
+        color={color}
+        radius="lg"
+        onClick={() => {
+          toggle();
+          console.log('Pressed button');
+        }}
+      >
+        <Tooltip label={label} offset={10} position="left">
+          <IconComponent style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+        </Tooltip>
+      </ActionIcon>
+    </>
   );
 }
 
-function getActionIcon(status: Perm['status']) {
+function GetActionIcon({ status }: { status: Perm['status'] }) {
   switch (status.toLowerCase()) {
     case 'passed':
-      return <>{getActionButton('view')}</>;
+      return (
+        <>
+          <GetActionButton actionType="view" />
+        </>
+      );
     case 'failed':
       // TODO: disable button if user is on cooldown
-      return <>{getActionButton('send')}</>;
+      return (
+        <>
+          <GetActionButton actionType="send" />
+        </>
+      );
     case 'pending':
       return (
         <>
-          {getActionButton('edit')}
-          {getActionButton('delete')}
+          <GetActionButton actionType="edit" />
+          <GetActionButton actionType="delete" />
         </>
       );
     case 'blacklisted':
       return <></>;
     case 'none':
     default:
-      return <>{getActionButton('send')}</>;
+      return (
+        <>
+          <GetActionButton actionType="send" />
+        </>
+      );
   }
 }
 
-function createRowData(perms: Perm[]) {
-  return perms.map((item: Perm) => (
-    <Table.Tr key={item.name}>
-      <Table.Td>{item.name}</Table.Td>
+function CreateRowData({ perms }: { perms: Perm[] }) {
+  return perms.map(({ name, status, requiredHours, prereqs, strikes }) => (
+    <Table.Tr key={name}>
+      <Table.Td>{name}</Table.Td>
       <Table.Td>
         <Center>
-          <Badge color={statusColors[item.status.toLowerCase()]} variant="filled">
-            {item.status}
+          <Badge color={statusColors[status.toLowerCase()]} variant="filled">
+            {status}
           </Badge>
         </Center>
       </Table.Td>
       <Table.Td>
-        <Center>{item.requiredHours}</Center>
+        <Center>{requiredHours}</Center>
       </Table.Td>
       <Table.Td>
         <Center>
-          <Group justify="center">{getPrereqs(item.prereqs)}</Group>
+          <Group justify="center">
+            <GetPrereqs prereqs={prereqs} />
+          </Group>
         </Center>
       </Table.Td>
       <Table.Td>
-        <Center>{getStrikeBadges(item.strikes)}</Center>
+        <Center>
+          <GetStrikeBadges strikes={strikes} />
+        </Center>
       </Table.Td>
       <Table.Td>
-        <Group justify="center">{getActionIcon(item.status)}</Group>
+        <Group justify="center">
+          <GetActionIcon status={status} />
+        </Group>
       </Table.Td>
     </Table.Tr>
   ));
 }
 
-function createTable(name: Perm['name'], perms: Perm[]) {
-  const data = createRowData(perms);
-
+function CreateTable({ name, perms }: { name: Perm['name']; perms: Perm[] }) {
   return (
     <Paper withBorder radius={20} m={20}>
       <Table.ScrollContainer minWidth={600} p={10}>
@@ -250,7 +280,9 @@ function createTable(name: Perm['name'], perms: Perm[]) {
               <Table.Th style={{ textAlign: 'center' }}>Actions</Table.Th>
             </Table.Tr>
           </Table.Thead>
-          <Table.Tbody>{data}</Table.Tbody>
+          <Table.Tbody>
+            <CreateRowData perms={perms} />
+          </Table.Tbody>
         </Table>
       </Table.ScrollContainer>
     </Paper>
@@ -260,8 +292,8 @@ function createTable(name: Perm['name'], perms: Perm[]) {
 export function PermissionsTable() {
   return (
     <>
-      {createTable('Standard Permissions', standardPerms)}
-      {createTable('Asset Permissions', assetPerms)}
+      <CreateTable name="Standard Permissions" perms={standardPerms} />
+      <CreateTable name="Asset Permissions" perms={assetPerms} />
     </>
   );
 }

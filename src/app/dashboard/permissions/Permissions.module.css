@@ -28,7 +28,6 @@
   top: 0;
   right: 0;
   width: 480px;
-  z-index: 1000;
 
   .closeButton {
     outline: 2px solid grey;
