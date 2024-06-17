@@ -8,7 +8,8 @@ import { IconLock, IconSword, IconShield, IconSwords, IconLayoutBoard } from '@t
 import { ColorSchemeToggle, LinksGroup, UserButton } from '@/src/components';
 import classes from './Dashboard.module.css';
 import icon from '@/src/public/icon.png';
-import { User } from '@/lib/types';
+import { IUser } from '@/src/Model/User';
+// import { User } from '@/lib/types';
 
 const mockdata = [
   { label: 'Dashboard', icon: IconLayoutBoard, link: '/dashboard' },
@@ -60,7 +61,7 @@ const mockdata = [
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [opened, { toggle }] = useDisclosure();
 
@@ -101,10 +102,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const allowedSections = mockdata.filter((section) => {
     if (!section.requiredPermission) return true;
     return section.requiredPermission.some((permission) => {
-      if (permission === 'KOG') return user.isKOG;
-      if (permission === 'KT') return user.isKT;
-      if (permission === 'Admin') return user.isAdmin;
-      if (permission === 'CS') return user.isCS;
+      if (permission === 'KOG') return user.roles.KOG;
+      if (permission === 'KT') return user.roles.KT;
+      if (permission === 'Admin') return user.roles.admin;
+      if (permission === 'CS') return user.roles.cs;
       return false;
     });
   });
