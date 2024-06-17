@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { encrypt } from '@/src/app/services/encryption';
-import { createUser, getUser, updateRoles } from '@/src/app/services/user';
+import { createUser, getUser, updateRoles, updateUser } from '@/src/app/services/user';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -52,11 +52,6 @@ export async function GET(request: NextRequest) {
     const avatarUrl =
       `https://cdn.discordapp.com/avatars/${guildData.user.id}/${guildData.avatar || guildData.user.avatar}.png` ||
       'https://cdn.discordapp.com/embed/avatars/0.png';
-    // const user: User = {
-    //   id: guildData.user.id,
-    //   name: guildData.nick || guildData.user.global_name || guildData.username,
-    //   avatar: avatarUrl,
-    // };
 
     const userData = {
       id: guildData.user.id,
@@ -68,7 +63,10 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       createUser(userData.id, userData.name, userData.avatar);
+    } else {
+      updateUser(userData.id, userData.name, userData.avatar);
     }
+
     updateRoles(userData.id, guildData);
 
     user = await getUser(userData.id);

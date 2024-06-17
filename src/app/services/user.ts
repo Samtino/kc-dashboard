@@ -23,6 +23,29 @@ export async function createUser(
   }
 }
 
+export async function updateUser(
+  discordID: string,
+  discordName: string,
+  discordAvatar?: string
+): Promise<any> {
+  try {
+    await connectDB();
+
+    const user = await User.findOne({ discordID });
+
+    if (!user) return false;
+
+    user.discordName = discordName;
+    user.discordAvatar = discordAvatar;
+
+    await user.save();
+
+    return true;
+  } catch (error: any) {
+    return false;
+  }
+}
+
 export async function getUser(discordID: string): Promise<IUser | null> {
   try {
     await connectDB();
@@ -58,8 +81,8 @@ export async function updateRoles(discordID: string, guildData: any): Promise<vo
     }
   });
 
-  // FIXME: add sysAdmin id's to .env
-  if (user.discordID === '348233630415454208' || user.discordID === '105509397211406336') {
+  const sysAdmins = process.env.SYS_ADMIN_IDS?.split(',') || [];
+  if (sysAdmins.includes(user.discordID)) {
     user.roles.sysAdmin = true;
   }
 
