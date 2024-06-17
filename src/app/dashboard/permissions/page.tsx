@@ -7,9 +7,9 @@ import classes from './Permissions.module.css';
 
 // TODO: Add real data from the DB
 export default function PermissionsPage() {
-  // const [modalOpened, { toggle: modalToggle }] = useDisclosure();
   const [bannerOpened, setBannerOpened] = useState(false);
 
+  // TODO: move this to the PermissionsTable and display over the table as a banner
   const assetExams = {
     status: false,
     endDate: new Date('2024-06-20'),
