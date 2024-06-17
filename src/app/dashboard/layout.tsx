@@ -76,6 +76,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         setUser(fetchedUser);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
       } finally {
         setLoading(false);

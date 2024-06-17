@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { encrypt } from '@/src/app/services/encryption';
-import { User } from '@/lib/types';
 import { createUser, getUser, updateRoles } from '@/src/app/services/user';
 
 export async function GET(request: NextRequest) {
