@@ -50,7 +50,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/?error=NotInGuild', request.url));
     }
 
-    // const avatarUrl = `https://cdn.discordapp.com/avatars/${guildData.user.id}/${guildData.avatar || guildData.user.avatar}.png`;
+    const avatarUrl =
+      `https://cdn.discordapp.com/avatars/${guildData.user.id}/${guildData.avatar || guildData.user.avatar}.png` ||
+      'https://cdn.discordapp.com/embed/avatars/0.png';
     // const user: User = {
     //   id: guildData.user.id,
     //   name: guildData.nick || guildData.user.global_name || guildData.username,
@@ -60,9 +62,7 @@ export async function GET(request: NextRequest) {
     const userData = {
       id: guildData.user.id,
       name: guildData.nick || guildData.user.global_name || guildData.username,
-      avatar: guildData.avatar
-        ? `https://cdn.discordapp.com/avatars/${guildData.user.id}/${guildData.avatar}.png`
-        : undefined,
+      avatar: avatarUrl,
     };
 
     let user = await getUser(userData.id);
@@ -75,6 +75,7 @@ export async function GET(request: NextRequest) {
     user = await getUser(userData.id);
 
     const encryptedData = await encrypt(JSON.stringify(user));
+
     response.cookies.set('user', encryptedData, {
       path: '/',
       sameSite: 'lax',

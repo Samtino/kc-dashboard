@@ -3,18 +3,18 @@ import { IconChevronRight } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import classes from './UserButton.module.css';
-import { User } from '@/lib/types';
+import { IUser } from '@/src/Model/User';
 
-function UserCard({ user }: { user: User | null }) {
+function UserCard({ user }: { user: IUser | null }) {
   return (
     <>
-      <Avatar src={user?.avatar || null} radius="xl" />
+      <Avatar src={user?.discordAvatar} radius="xl" />
       <div className="usercard">
         <Text size="sm" fw={500}>
-          {user?.name || 'Loading...'}
+          {user?.discordName || 'Loading...'}
         </Text>
         <Text c="dimmed" size="xs">
-          {user?.id || ''}
+          {user?.discordID || ''}
         </Text>
       </div>
     </>
@@ -36,7 +36,7 @@ function ErrorCard({ message }: { message: string }) {
 }
 
 export function UserButton() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<IUser>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [menuOpened, setMenuOpened] = useState(false);
@@ -121,7 +121,7 @@ export function UserButton() {
       <PopupMenu />
       <UnstyledButton className={classes.user} onClick={userCardClick}>
         <Group justify="space-between">
-          <UserCard user={user} />
+          <UserCard user={user as IUser} />
           <Chevron />
         </Group>
       </UnstyledButton>
