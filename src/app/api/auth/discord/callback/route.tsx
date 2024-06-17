@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { encrypt } from '@/src/app/services/encryption';
 import { User } from '@/lib/types';
+import { createUser, getUser, updateRoles } from '@/src/app/services/user';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -49,37 +50,31 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/?error=NotInGuild', request.url));
     }
 
-    const avatarUrl = `https://cdn.discordapp.com/avatars/${guildData.user.id}/${guildData.avatar || guildData.user.avatar}.png`;
-    const user: User = {
+    // const avatarUrl = `https://cdn.discordapp.com/avatars/${guildData.user.id}/${guildData.avatar || guildData.user.avatar}.png`;
+    // const user: User = {
+    //   id: guildData.user.id,
+    //   name: guildData.nick || guildData.user.global_name || guildData.username,
+    //   avatar: avatarUrl,
+    // };
+
+    const userData = {
       id: guildData.user.id,
       name: guildData.nick || guildData.user.global_name || guildData.username,
-      avatar: avatarUrl,
+      avatar: guildData.avatar
+        ? `https://cdn.discordapp.com/avatars/${guildData.user.id}/${guildData.avatar}.png`
+        : undefined,
     };
 
-    guildData.roles.forEach((role: string) => {
-      switch (role) {
-        case process.env.CS_ROLE_ID:
-          user.isCS = true;
-        /* falls through */
-        case process.env.ADMIN_ROLE_ID:
-          user.isAdmin = true;
-          break;
-        case process.env.KOG_ROLE_ID:
-        case process.env.MPU_ROLE_ID:
-          user.isKOG = true;
-          break;
-        case process.env.KT_ROLE_ID:
-          user.isKT = true;
-          break;
-      }
-    });
+    let user = await getUser(userData.id);
 
-    // Force all permissions to true for test account
-    if (user.id === '348233630415454208' || user.id === '105509397211406336') {
-      user.isSysAdmin = true;
+    if (!user) {
+      createUser(userData.id, userData.name, userData.avatar);
     }
+    updateRoles(userData.id, guildData);
 
-    const encryptedData = await encrypt(user);
+    user = await getUser(userData.id);
+
+    const encryptedData = await encrypt(JSON.stringify(user));
     response.cookies.set('user', encryptedData, {
       path: '/',
       sameSite: 'lax',

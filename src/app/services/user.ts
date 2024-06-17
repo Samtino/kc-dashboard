@@ -9,8 +9,6 @@ export async function createUser(
   try {
     await connectDB();
 
-    console.log('Creating user');
-
     const user = new User({
       discordID,
       discordName,
@@ -35,4 +33,35 @@ export async function getUser(discordID: string): Promise<IUser | null> {
   } catch (error: any) {
     return null;
   }
+}
+
+export async function updateRoles(discordID: string, guildData: any): Promise<void> {
+  const user = await getUser(discordID);
+
+  if (!user) return;
+
+  guildData.roles.forEach((role: string) => {
+    switch (role) {
+      case process.env.CS_ROLE_ID:
+        user.roles.cs = true;
+      /* falls through */
+      case process.env.ADMIN_ROLE_ID:
+        user.roles.admin = true;
+        break;
+      case process.env.KOG_ROLE_ID:
+      case process.env.MPU_ROLE_ID:
+        user.roles.KOG = true;
+        break;
+      case process.env.KT_ROLE_ID:
+        user.roles.KT = true;
+        break;
+    }
+  });
+
+  // FIXME: add sysAdmin id's to .env
+  if (user.discordID === '348233630415454208' || user.discordID === '105509397211406336') {
+    user.roles.sysAdmin = true;
+  }
+
+  user.save();
 }
