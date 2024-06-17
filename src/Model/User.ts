@@ -1,8 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface IPermission {
+export interface IPermission {
   name: string;
-  // status?: 'passed' | 'failed' | 'pending' | 'blacklisted';
   status?: {
     type: 'passed' | 'failed' | 'pending' | 'blacklisted';
     message?: string;
@@ -17,6 +16,7 @@ interface IPermission {
     strike2?: { reason: string; date: Date; expires?: Date; by?: string };
   };
 }
+
 const StrikeSchema: Schema = new Schema(
   {
     reason: { type: String, required: true },
@@ -45,7 +45,7 @@ const PermissionSchema: Schema = new Schema(
   { _id: false }
 );
 
-interface IUser extends Document {
+export interface IUser extends Document {
   discordID: string;
   discordName: string;
   discordAvatar: string;
@@ -67,7 +67,11 @@ const UserSchema: Schema = new Schema(
   {
     discordID: { type: String, required: true },
     discordName: { type: String, required: true },
-    discordAvatar: { type: String, required: true },
+    discordAvatar: {
+      type: String,
+      required: true,
+      default: 'https://cdn.discordapp.com/embed/avatars/0.png',
+    },
     steamID: { type: String, required: false },
     BMID: { type: String, required: false },
     roles: {
@@ -82,4 +86,8 @@ const UserSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model<IUser>('User', UserSchema);
+UserSchema.index({ discordID: 1 }, { unique: true });
+
+const UserModel = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+
+export default UserModel;
