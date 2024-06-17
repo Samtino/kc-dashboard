@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 import type { NextRequest } from 'next/server';
 import { decrypt } from './app/services/encryption';
-import { User } from '@/lib/types';
+import { IUser } from './Model/User';
 
 async function getUser(req: NextRequest) {
   try {
@@ -15,7 +15,7 @@ async function getUser(req: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
-  const currentUser: User = await getUser(request);
+  const currentUser: IUser = await getUser(request);
   const path = request.nextUrl.pathname;
 
   // TODO: Redirect to /login instead after implementing login page
@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Ignore middleware for sys-admins
-  if (currentUser && currentUser.isSysAdmin) {
+  if (currentUser && currentUser.roles.sysAdmin) {
     return;
   }
 
@@ -34,22 +34,22 @@ export async function middleware(request: NextRequest) {
   }
 
   // Prevent users from accessing kog page if they are not a kog member
-  if (currentUser && !currentUser.isKOG && path.startsWith('/dashboard/kog')) {
+  if (currentUser && !currentUser.roles.KOG && path.startsWith('/dashboard/kog')) {
     return Response.redirect(new URL('/dashboard', request.url));
   }
 
   // Prevent users from accessing kt page if they are not a kt member
-  if (currentUser && !currentUser.isKT && path.startsWith('/dashboard/kt')) {
+  if (currentUser && !currentUser.roles.KT && path.startsWith('/dashboard/kt')) {
     return Response.redirect(new URL('/dashboard', request.url));
   }
 
   // Prevent users from accessing admin pages if they are not an admin
-  if (currentUser && !currentUser.isAdmin && path.startsWith('/dashboard/admin')) {
+  if (currentUser && !currentUser.roles.admin && path.startsWith('/dashboard/admin')) {
     return Response.redirect(new URL('/dashboard', request.url));
   }
 
   // Prevent admins from accessing CS pages if they are not a CS
-  if (currentUser && !currentUser.isCS && path.startsWith('/dashboard/admin/manage')) {
+  if (currentUser && !currentUser.roles.cs && path.startsWith('/dashboard/admin/manage')) {
     return Response.redirect(new URL('/dashboard', request.url), 403);
   }
 }
