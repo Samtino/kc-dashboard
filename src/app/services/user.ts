@@ -1,22 +1,19 @@
-import User, { IUser } from '@/src/Model/User';
-import connectDB from '../lib/connectDB';
+import type { User } from '@prisma/client';
+import prisma from '@/src/db';
 
 export async function createUser(
-  discordID: string,
-  discordName: string,
-  discordAvatar?: string
-): Promise<any> {
+  discord_id: string,
+  discord_username: string,
+  discord_avatar_url?: string
+): Promise<boolean> {
   try {
-    await connectDB();
-
-    const user = new User({
-      discordID,
-      discordName,
-      discordAvatar,
+    await prisma.user.create({
+      data: {
+        discord_id,
+        discord_username,
+        discord_avatar_url,
+      },
     });
-
-    await user.save();
-
     return true;
   } catch (error: any) {
     return false;
@@ -24,21 +21,23 @@ export async function createUser(
 }
 
 export async function updateUser(
-  discordID: string,
-  discordName: string,
-  discordAvatar?: string
-): Promise<any> {
+  discord_id: string,
+  discord_username: string,
+  discord_avatar_url?: string
+): Promise<boolean> {
   try {
-    await connectDB();
-
-    const user = await User.findOne({ discordID });
-
+    const user = await getUser(discord_id);
     if (!user) return false;
 
-    user.discordName = discordName;
-    user.discordAvatar = discordAvatar;
-
-    await user.save();
+    prisma.user.update({
+      where: {
+        discord_id,
+      },
+      data: {
+        discord_username,
+        discord_avatar_url,
+      },
+    });
 
     return true;
   } catch (error: any) {
@@ -46,45 +45,55 @@ export async function updateUser(
   }
 }
 
-export async function getUser(discordID: string): Promise<IUser | null> {
+export async function getUser(discord_id: string): Promise<User | null> {
   try {
-    await connectDB();
-
-    const user = await User.findOne({ discordID });
-
-    return user;
+    return await prisma.user.findUnique({
+      where: {
+        discord_id,
+      },
+    });
   } catch (error: any) {
     return null;
   }
 }
 
-export async function updateRoles(discordID: string, guildData: any): Promise<void> {
-  const user = await getUser(discordID);
+export async function updateRoles(discord_id: string, guildData: any): Promise<boolean> {
+  const user = await getUser(discord_id);
 
-  if (!user) return;
+  if (!user) return false;
 
-  guildData.roles.forEach((role: string) => {
+  const roles: User['roles'] = [];
+  guildData.roles.forEach((role: String) => {
     switch (role) {
       case process.env.CS_ROLE_ID:
-        user.roles.cs = true;
-      /* falls through */
+        roles.push('COMMUNITY_STAFF');
+        break;
       case process.env.ADMIN_ROLE_ID:
-        user.roles.admin = true;
+        roles.push('ADMIN');
         break;
       case process.env.KOG_ROLE_ID:
       case process.env.MPU_ROLE_ID:
-        user.roles.KOG = true;
+        roles.push('KOG');
         break;
       case process.env.KT_ROLE_ID:
-        user.roles.KT = true;
+        roles.push('KT');
         break;
     }
   });
 
   const sysAdmins = process.env.SYS_ADMIN_IDS?.split(',') || [];
-  if (sysAdmins.includes(user.discordID)) {
-    user.roles.sysAdmin = true;
+  if (sysAdmins.includes(user.discord_id)) {
+    roles.push('SYS_ADMIN');
   }
 
-  user.save();
+  await prisma.user.update({
+    where: {
+      discord_id,
+    },
+    data: {
+      roles,
+    },
+  });
+
+  return true;
 }

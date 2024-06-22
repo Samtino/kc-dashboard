@@ -23,7 +23,7 @@ model User {
   discord_avatar_url     String           @default("https://cdn.discordapp.com/embed/avatars/0.png")
   steam_id               Int?             @unique
   bmid                   Int?             @unique
-  roles                  Role[]
+  roles                  Role[]           @unique
   permissions            UserPermission[]
   applications           Application[]
   strikes                Strike[]
