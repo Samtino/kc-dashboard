@@ -1,6 +1,17 @@
 'use client';
 
-import { Image, Container, Title, Button, Group, Text, List, ThemeIcon, rem } from '@mantine/core';
+import {
+  Image,
+  Container,
+  Title,
+  Button,
+  Group,
+  Text,
+  List,
+  ThemeIcon,
+  rem,
+  Alert,
+} from '@mantine/core';
 import { IconCheck, IconBrandGithub, IconBrandDiscord } from '@tabler/icons-react';
 import Link from 'next/link';
 import logo from '@/src/public/icon.png';
@@ -13,12 +24,26 @@ export default function Landing() {
       <div className={classes.inner}>
         <div className={classes.content}>
           <Title className={classes.title}>
-            {/* A <span className={classes.highlight}>modern</span> React <br /> components library */}
-            Welcome to the Karma Community Permissions Dashbard
+            Welcome to the Karma Community{' '}
+            <Text
+              component="span"
+              inherit
+              variant="gradient"
+              gradient={{ from: 'green', to: 'blue' }}
+            >
+              {' '}
+              Permissions Dashboard{' '}
+            </Text>{' '}
           </Title>
-          <Text c="dimmed" mt="md">
+          {/* <Text c="dimmed" mt="md">
             Please report any issues you find directly to the Karma Community Discord server.
-          </Text>
+          </Text> */}
+          <Alert variant="light" color="red" title="Disclaimer" radius={10} mt="md">
+            <Text c="dimmed">
+              This is still under development and there are bound to be missing features or bugs.
+              Please report any issues or suggestions to the GitHub to improve the product!
+            </Text>
+          </Alert>
 
           <List
             mt={30}
@@ -30,10 +55,6 @@ export default function Landing() {
               </ThemeIcon>
             }
           >
-            <p>
-              This is still under development and there are bound to be missing features or bugs
-            </p>
-
             <h3>You can: </h3>
             <List.Item>View your current permissions</List.Item>
             <List.Item>Apply for new permissions</List.Item>
