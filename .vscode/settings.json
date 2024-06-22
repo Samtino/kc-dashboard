@@ -1,5 +1,9 @@
 {
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  "workbench.editor.labelFormat": "short"
+  "workbench.editor.labelFormat": "short",
+  "editor.formatOnSave": true,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }
