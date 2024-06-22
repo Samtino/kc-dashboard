@@ -53,16 +53,22 @@ const permissions = [
 ];
 
 async function main() {
+  console.log('Deleting all permissions...');
+  await prisma.permission.deleteMany();
+  console.log('Permissions deleted');
+
+  console.log('Seeding permissions...');
   for (const permission of permissions) {
     await prisma.permission.create({
       data: permission,
     });
+    console.log(`Permission ${permission.name} seeded`);
   }
 }
 
 main()
   .then(() => {
-    console.log('Database has been seeded with permissions');
+    console.log('\n\nDatabase has been seeded with permissions!!\n');
   })
   .catch((e) => {
     console.error(e);

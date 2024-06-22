@@ -41,7 +41,7 @@ enum Role {
 }
 
 model Permission {
-  id             Int              @id @default(autoincrement())
+  id             String           @id @default(cuid())
   name           String           @unique
   required_hours Int
   prerequisites  String[]
@@ -51,32 +51,33 @@ model Permission {
 }
 
 model Application {
-  id              Int               @id @default(autoincrement())
+  id              String            @id @default(cuid())
   user            User              @relation(fields: [user_id], references: [id])
   user_id         Int
   permission      Permission        @relation(fields: [permission_id], references: [id])
-  permission_id   Int
+  permission_id   String
   status          ApplicationStatus
   processed_by    User?             @relation("ProcessedBy", fields: [processed_by_id], references: [id])
   processed_by_id Int?
   processed_at    DateTime?
   next_apply_date DateTime?
   created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
 }
 
 model Strike {
-  id            Int        @id @default(autoincrement())
+  id            String     @id @default(cuid())
   user          User       @relation(fields: [userId], references: [id])
   userId        Int
   permission    Permission @relation(fields: [permission_id], references: [id])
-  permission_id Int
+  permission_id String
   reason        String?
   created_at    DateTime   @default(now())
 }
 
 model UserPermission {
   user_id       Int
-  permission_id Int
+  permission_id String
   user          User       @relation(fields: [user_id], references: [id])
   permission    Permission @relation(fields: [permission_id], references: [id])
 
