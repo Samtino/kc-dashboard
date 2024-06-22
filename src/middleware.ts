@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 import type { NextRequest } from 'next/server';
 import { decrypt } from './app/services/encryption';
-import { IUser } from './Model/User';
+// import { IUser } from './Model/User';
 
 async function getUser(req: NextRequest) {
   try {
@@ -15,6 +15,8 @@ async function getUser(req: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
+  return; // FIXME: fix with Prisma DB
+
   const currentUser: IUser = await getUser(request);
   const path = request.nextUrl.pathname;
 

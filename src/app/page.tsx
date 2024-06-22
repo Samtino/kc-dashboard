@@ -16,7 +16,7 @@ import { IconCheck, IconBrandGithub, IconBrandDiscord } from '@tabler/icons-reac
 import Link from 'next/link';
 import logo from '@/src/public/icon.png';
 import classes from './Landing.module.css';
-import { ColorSchemeToggle } from '@/src/components';
+import { ColorSchemeToggle } from '@/src/components/ColorSchemeToggle/ColorSchemeToggle';
 
 export default function Landing() {
   return (
