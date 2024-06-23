@@ -1,20 +1,23 @@
 import { UnstyledButton, Group, Avatar, Text, rem, Menu, Divider, Collapse } from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
+import { User } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import classes from './UserButton.module.css';
-import { IUser } from '@/src/Model/User';
+import { getCurrentUser } from '@/src/app/services/user';
 
-function UserCard({ user }: { user: IUser | null }) {
+// FIXME: Fix popup menu not appearing for any other than the success case (user is loaded)
+
+function UserCard({ user }: { user: User | null }) {
   return (
     <>
-      <Avatar src={user?.discordAvatar} radius="xl" />
+      <Avatar src={user?.discord_avatar_url} radius="xl" />
       <div className="usercard">
         <Text size="sm" fw={500}>
-          {user?.discordName || 'Loading...'}
+          {user?.discord_username || 'Loading...'}
         </Text>
         <Text c="dimmed" size="xs">
-          {user?.discordID || ''}
+          {user?.discord_id || ''}
         </Text>
       </div>
     </>
@@ -36,10 +39,27 @@ function ErrorCard({ message }: { message: string }) {
 }
 
 export function UserButton() {
-  const [user, setUser] = useState<IUser>();
+  const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>();
   const [menuOpened, setMenuOpened] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+        }
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const userCardClick = () => {
     setMenuOpened(!menuOpened);
@@ -77,23 +97,6 @@ export function UserButton() {
     );
   }
 
-  useEffect(() => {
-    fetch('/api/user-data')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setUser(data);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
-
   if (loading) {
     return (
       <UnstyledButton className={classes.user}>
@@ -121,7 +124,7 @@ export function UserButton() {
       <PopupMenu />
       <UnstyledButton className={classes.user} onClick={userCardClick}>
         <Group justify="space-between">
-          <UserCard user={user as IUser} />
+          <UserCard user={user as User} />
           <Chevron />
         </Group>
       </UnstyledButton>

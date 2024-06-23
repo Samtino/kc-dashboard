@@ -1,4 +1,8 @@
+'use server';
+
 import type { User } from '@prisma/client';
+import { cookies } from 'next/headers';
+import { decrypt } from './encryption';
 import prisma from '@/src/db';
 
 export async function createUser(
@@ -55,6 +59,14 @@ export async function getUser(discord_id: string): Promise<User | null> {
   } catch (error: any) {
     return null;
   }
+}
+
+export async function getCurrentUser(): Promise<User | null> {
+  const token = cookies().get('user')?.value;
+  if (!token) return null;
+
+  const user: User = await decrypt(token);
+  return user;
 }
 
 export async function updateRoles(discord_id: string, guildData: any): Promise<boolean> {

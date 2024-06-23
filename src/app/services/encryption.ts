@@ -22,16 +22,3 @@ export async function decrypt(input: string): Promise<any> {
     throw new Error(`JWT verification failed: ${error.message}`);
   }
 }
-
-function toPlainObject(obj: any): Record<string, any> {
-  const plainObject: Record<string, any> = {};
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const value = obj[key];
-      if (typeof value !== 'function') {
-        plainObject[key] = value;
-      }
-    }
-  }
-  return plainObject;
-}

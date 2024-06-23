@@ -5,13 +5,14 @@ import { AppShell, Group, ScrollArea, Image, Burger, Loader, Center } from '@man
 import { useDisclosure } from '@mantine/hooks';
 import NextImage from 'next/image';
 import { IconLock, IconSword, IconShield, IconSwords, IconLayoutBoard } from '@tabler/icons-react';
+import { User } from '@prisma/client';
 import { ColorSchemeToggle, LinksGroup, UserButton } from '@/src/components';
 import classes from './Dashboard.module.css';
 import icon from '@/src/public/icon.png';
-import { IUser } from '@/src/Model/User';
-// import { User } from '@/lib/types';
+import { getCurrentUser } from '@/src/app/services/user';
+import { LinksGroupProps } from '@/src/components/NavbarLinksGroup/NavbarLinksGroup';
 
-const mockdata = [
+const mockdata: LinksGroupProps[] = [
   { label: 'Dashboard', icon: IconLayoutBoard, link: '/dashboard' },
   {
     label: 'Permissions',
@@ -56,26 +57,22 @@ const mockdata = [
       { label: 'Applications', link: '/dashboard/admin/apps' },
       { label: 'Events', link: '/dashboard/admin/events' },
     ],
-    requiredPermission: ['Admin', 'CS'],
+    requiredPermission: ['ADMIN', 'COMMUNITY_STAFF'],
   },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<IUser | null>(null);
+  const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
   const [opened, { toggle }] = useDisclosure();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/user-data');
-        const fetchedUser = await response.json();
-
-        if (fetchedUser.error) {
-          throw new Error(fetchedUser.error);
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
         }
-
-        setUser(fetchedUser);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error);
@@ -101,13 +98,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const allowedSections = mockdata.filter((section) => {
     if (!section.requiredPermission) return true;
-    return section.requiredPermission.some((permission) => {
-      if (permission === 'KOG') return user.roles.KOG;
-      if (permission === 'KT') return user.roles.KT;
-      if (permission === 'Admin') return user.roles.admin;
-      if (permission === 'CS') return user.roles.cs;
-      return false;
-    });
+    return section.requiredPermission.some((permission) => user.roles.includes(permission));
   });
 
   const links = allowedSections.map((item) => <LinksGroup {...item} key={item.label} />);

@@ -2,16 +2,18 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { User } from '@prisma/client';
 import { Group, Box, Collapse, ThemeIcon, Text, UnstyledButton, rem } from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
 import classes from './NavbarLinksGroup.module.css';
 
-interface LinksGroupProps {
+export interface LinksGroupProps {
   icon: React.FC<any>;
   label: string;
   link?: string;
   initiallyOpened?: boolean;
   links?: { label: string; link: string }[];
+  requiredPermission?: User['roles'];
 }
 
 export function LinksGroup({
