@@ -12,7 +12,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { Application, Permission, Strike, User, UserPermission } from '@prisma/client';
-import { Icon, IconPencil, IconSend, IconTrash, IconX, IconZoom } from '@tabler/icons-react';
+import { IconZoom, IconPencil, IconSend, IconTrash, IconX } from '@tabler/icons-react';
 import { ExamModal } from '../ExamModal/ExamModal';
 import { getCurrentUser } from '@/src/app/services/user';
 import {
@@ -23,14 +23,14 @@ import {
 } from '@/src/app/services/permissions';
 import { ExamForm } from '../ExamForm/ExamForm';
 
-type userData = {
+type UserData = {
   user: User;
   userPerms: UserPermission[];
   applications: Application[];
   strikes: Strike[];
 };
 
-type actionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
+type ActionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
 
 const statusColors: Record<string, string> = {
   passed: 'green',
@@ -43,23 +43,19 @@ const statusColors: Record<string, string> = {
 export function PermissionsTable() {
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
-
   const [standardPerms, setStandardPerms] = useState<Permission[]>();
   const [assetPerms, setAssetPerms] = useState<Permission[]>();
-  const [userData, setUserData] = useState<userData>();
+  const [userData, setUserData] = useState<UserData>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const currentUser = await getCurrentUser();
-        if (currentUser) {
-          setUser(currentUser);
-        }
-
+        setUser(currentUser);
         setStandardPerms(await getPermissionsData('standard'));
         setAssetPerms(await getPermissionsData('asset_exam'));
-      } catch (e: any) {
-        // setError(e.message);
+      } catch (e) {
+        console.error(e);
       } finally {
         setLoading(false);
       }
@@ -71,26 +67,20 @@ export function PermissionsTable() {
   useEffect(() => {
     const fetchUserPerms = async () => {
       if (user) {
-        const perms = await getUserPermissions(user.id);
-        const applications = await getUserApplications(user.id);
-        const strikes = await getUserStrikes(user.id);
+        const [perms, applications, strikes] = await Promise.all([
+          getUserPermissions(user.id),
+          getUserApplications(user.id),
+          getUserStrikes(user.id),
+        ]);
 
-        const data = {
-          user,
-          userPerms: perms,
-          applications,
-          strikes,
-        };
-
-        setUserData(data);
+        setUserData({ user, userPerms: perms, applications, strikes });
       }
     };
 
     fetchUserPerms();
-  });
+  }, [user]);
 
   if (loading) {
-    // TODO: add skeleton loader
     return (
       <Center>
         <Loader size="xl" />
@@ -121,7 +111,7 @@ function CreateTable({
 }: {
   permsType: string;
   permsData: Permission[];
-  userData: userData;
+  userData: UserData;
 }) {
   return (
     <Paper withBorder radius={20} m={20}>
@@ -141,7 +131,9 @@ function CreateTable({
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            <CreateRowData permsData={permsData} userData={userData} />
+            {permsData.map((perm) => (
+              <CreateRowData key={perm.id} perm={perm} userData={userData} />
+            ))}
           </Table.Tbody>
         </Table>
       </Table.ScrollContainer>
@@ -149,53 +141,50 @@ function CreateTable({
   );
 }
 
-function CreateRowData({ permsData, userData }: { permsData: Permission[]; userData: userData }) {
-  return permsData.map((perm) => {
-    const userApp = userData.applications.find((app) => app.permission_id === perm.id);
-    const status = userApp?.status ?? 'NONE';
+function CreateRowData({ perm, userData }: { perm: Permission; userData: UserData }) {
+  const userApp = userData.applications.find((app) => app.permission_id === perm.id);
+  const status = userApp?.status ?? 'NONE';
+  const strikes = userData.strikes.filter((strike) => strike.permission_id === perm.id);
 
-    const strikes = userData.strikes.filter((strike) => strike.permission_id === perm.id);
-    return (
-      <Table.Tr key={perm.id}>
-        <Table.Td>{perm.name}</Table.Td>
-        <Table.Td>
-          <Center>
-            <Badge color={statusColors[status.toLowerCase()]} variant="filled">
-              {status}
-            </Badge>
-          </Center>
-        </Table.Td>
-        <Table.Td>
-          <Center>{perm.required_hours}</Center>
-        </Table.Td>
-        <Table.Td>
-          <Center>
-            <Group justify="center">
-              <GetPrereqs prereqs={perm.prerequisites} status={status} />
-            </Group>
-          </Center>
-        </Table.Td>
-        <Table.Td>
-          <Center>
-            <GetStrikeBadges strikes={strikes} />
-          </Center>
-        </Table.Td>
-        <Table.Td>
+  return (
+    <Table.Tr>
+      <Table.Td>{perm.name}</Table.Td>
+      <Table.Td>
+        <Center>
+          <Badge color={statusColors[status.toLowerCase()]} variant="filled">
+            {status}
+          </Badge>
+        </Center>
+      </Table.Td>
+      <Table.Td>
+        <Center>{perm.required_hours}</Center>
+      </Table.Td>
+      <Table.Td>
+        <Center>
           <Group justify="center">
-            <GetActionIcon
-              status={status}
-              permName={perm.name}
-              userCooldown={userApp?.next_apply_date}
-              userData={userData.user}
-            />
+            <GetPrereqs prereqs={perm.prerequisites} status={status} />
           </Group>
-        </Table.Td>
-      </Table.Tr>
-    );
-  });
+        </Center>
+      </Table.Td>
+      <Table.Td>
+        <Center>
+          <GetStrikeBadges strikes={strikes} />
+        </Center>
+      </Table.Td>
+      <Table.Td>
+        <Group justify="center">
+          <GetActionIcon
+            status={status}
+            permName={perm.name}
+            userCooldown={userApp?.next_apply_date}
+            userData={userData.user}
+          />
+        </Group>
+      </Table.Td>
+    </Table.Tr>
+  );
 }
 
-// Prerequisites
 function GetPrereqs({
   prereqs,
   status,
@@ -203,7 +192,7 @@ function GetPrereqs({
   prereqs: Permission['prerequisites'];
   status: Application['status'];
 }) {
-  if (prereqs.length === 0 || !prereqs) {
+  if (!prereqs.length) {
     return (
       <Badge color="gray" variant="light">
         None
@@ -213,53 +202,37 @@ function GetPrereqs({
 
   const color = status === 'PASSED' ? 'green' : 'red';
 
-  return prereqs.map((item) => (
-    <Badge key={item} color={color} variant="filled">
-      {item}
-    </Badge>
-  ));
+  return (
+    <>
+      {prereqs.map((item) => (
+        <Badge key={item} color={color} variant="filled">
+          {item}
+        </Badge>
+      ))}
+    </>
+  );
 }
 
-// Strikes
 function GetStrikeBadges({ strikes }: { strikes: Strike[] }) {
-  const warningBadge = (
+  const strikeBadge = (strikeType: string, color: string, label: string) => (
     <Badge
-      color={strikes.find((strike) => strike.type === 'WARNING') ? 'yellow' : 'gray'}
+      color={strikes.some((strike) => strike.type === strikeType) ? color : 'gray'}
       variant="filled"
       circle
     >
-      W
-    </Badge>
-  );
-  const strike1Badge = (
-    <Badge
-      color={strikes.find((strike) => strike.type === 'STRIKE1') ? 'red' : 'gray'}
-      variant="filled"
-      circle
-    >
-      S
-    </Badge>
-  );
-  const strike2Badge = (
-    <Badge
-      color={strikes.find((strike) => strike.type === 'STRIKE2') ? 'red' : 'gray'}
-      variant="filled"
-      circle
-    >
-      S
+      {label}
     </Badge>
   );
 
   return (
     <Group justify="center">
-      {warningBadge}
-      {strike1Badge}
-      {strike2Badge}
+      {strikeBadge('WARNING', 'yellow', 'W')}
+      {strikeBadge('STRIKE1', 'red', 'S')}
+      {strikeBadge('STRIKE2', 'red', 'S')}
     </Group>
   );
 }
 
-// Action buttons
 function GetActionIcon({
   status,
   permName,
@@ -271,46 +244,46 @@ function GetActionIcon({
   userCooldown?: Application['next_apply_date'];
   userData: User;
 }) {
-  const onCooldown = userCooldown ? new Date(userCooldown) > new Date() : true;
+  const onCooldown = userCooldown ? new Date(userCooldown) > new Date() : false;
 
-  if (!userData.steam_id) {
-    return (
-      <>
-        <GetActionButton actionType="denied" permName={permName} disabled />
-      </>
-    );
-  }
+  const actionConfig: Record<
+    string,
+    { label: string; icon: typeof IconZoom; color: string; variant: string; disabled?: boolean }
+  > = {
+    view: { label: 'View', icon: IconZoom, color: 'gray', variant: 'light' },
+    edit: { label: 'Edit', icon: IconPencil, color: 'blue', variant: 'light' },
+    send: { label: 'Send', icon: IconSend, color: 'green', variant: 'light', disabled: onCooldown },
+    delete: { label: 'Delete', icon: IconTrash, color: 'red', variant: 'light' },
+    denied: { label: 'No SteamID', icon: IconX, color: 'red', variant: 'light' },
+  };
 
-  switch (status.toLowerCase()) {
-    case 'passed':
-      return (
-        <>
-          <GetActionButton actionType="view" permName={permName} />
-        </>
-      );
-    case 'failed':
-      return (
-        <>
-          <GetActionButton actionType="send" permName={permName} disabled={onCooldown} />
-        </>
-      );
-    case 'pending':
-      return (
-        <>
-          <GetActionButton actionType="edit" permName={permName} />
-          <GetActionButton actionType="delete" permName={permName} />
-        </>
-      );
-    case 'blacklisted':
-      return <></>;
-    case 'none':
-    default:
-      return (
-        <>
-          <GetActionButton actionType="send" permName={permName} />
-        </>
-      );
-  }
+  const actionTypes: Record<string, ActionType[]> = {
+    passed: ['view'],
+    failed: ['send'],
+    pending: ['edit', 'delete'],
+    blacklisted: [],
+    none: ['send'],
+  };
+
+  const actions = actionTypes[status.toLowerCase()] || ['send'];
+
+  return (
+    <>
+      {actions.map((actionType) => {
+        const action = actionConfig[actionType];
+        if (!action) return null;
+
+        return (
+          <GetActionButton
+            key={actionType}
+            actionType={actionType}
+            permName={permName}
+            disabled={action.disabled}
+          />
+        );
+      })}
+    </>
+  );
 }
 
 function GetActionButton({
@@ -318,13 +291,13 @@ function GetActionButton({
   permName,
   disabled,
 }: {
-  actionType: actionType;
+  actionType: ActionType;
   permName: Permission['name'];
   disabled?: boolean;
 }) {
   const actionConfig: Record<
     string,
-    { label: string; icon: Icon; color: string; variant: string }
+    { label: string; icon: typeof IconZoom; color: string; variant: string }
   > = {
     view: { label: 'View', icon: IconZoom, color: 'gray', variant: 'light' },
     edit: { label: 'Edit', icon: IconPencil, color: 'blue', variant: 'light' },
@@ -345,13 +318,7 @@ function GetActionButton({
       <ExamModal hidden={hidden} toggle={toggle} title={title}>
         <ExamForm name={permName} type={actionType} />
       </ExamModal>
-      <ActionIcon
-        variant={variant}
-        color={color}
-        radioGroup="lg"
-        onClick={toggle}
-        disabled={disabled}
-      >
+      <ActionIcon variant={variant} color={color} radius="lg" onClick={toggle} disabled={disabled}>
         <Tooltip label={label} offset={10} position="left">
           <IconComponent style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
         </Tooltip>
