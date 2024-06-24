@@ -51,6 +51,11 @@ export function PermissionsTable() {
     const fetchData = async () => {
       try {
         const currentUser = await getCurrentUser();
+
+        if (!currentUser) {
+          throw new Error('User not found');
+        }
+
         setUser(currentUser);
         setStandardPerms(await getPermissionsData('standard'));
         setAssetPerms(await getPermissionsData('asset_exam'));
