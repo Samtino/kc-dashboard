@@ -26,29 +26,35 @@ const permissions = [
     name: 'Banshee',
     required_hours: 50,
     prerequisites: ['Platoon Medic'],
+    asset_exam: true,
   },
   {
     name: 'Butcher',
     required_hours: 50,
+    asset_exam: true,
   },
   {
     name: 'Phantom',
     required_hours: 50,
     prerequisites: ['Company Command', 'Platoon TACP'],
+    asset_exam: true,
   },
   {
     name: 'Rotary Logistics',
     required_hours: 50,
+    asset_exam: true,
   },
   {
     name: 'Rotary CAS',
     required_hours: 50,
     prerequisites: ['Rotary Logistics'],
+    asset_exam: true,
   },
   {
     name: 'Fixed Wing CAS',
     required_hours: 50,
     prerequisites: ['Rotary Logistics'],
+    asset_exam: true,
   },
 ];
 

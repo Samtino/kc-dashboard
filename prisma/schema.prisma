@@ -45,6 +45,7 @@ model Permission {
   name           String           @unique
   required_hours Int
   prerequisites  String[]
+  asset_exam     Boolean          @default(false)
   applications   Application[]
   users          UserPermission[]
   strikes        Strike[]
@@ -65,14 +66,29 @@ model Application {
   updated_at      DateTime          @updatedAt
 }
 
+enum ApplicationStatus {
+  PENDING
+  PASSED
+  FAILED
+  BLACKLISTED
+  NONE
+}
+
 model Strike {
   id            String     @id @default(cuid())
-  user          User       @relation(fields: [userId], references: [id])
-  userId        Int
+  type          StrikeType
+  user          User       @relation(fields: [user_id], references: [id])
+  user_id       Int
   permission    Permission @relation(fields: [permission_id], references: [id])
   permission_id String
   reason        String?
   created_at    DateTime   @default(now())
+}
+
+enum StrikeType {
+  WARNING
+  STRIKE1
+  STRIKE2
 }
 
 model UserPermission {
@@ -82,11 +98,4 @@ model UserPermission {
   permission    Permission @relation(fields: [permission_id], references: [id])
 
   @@id([user_id, permission_id])
-}
-
-enum ApplicationStatus {
-  PENDING
-  PASSED
-  FAILED
-  BLACKLISTED
 }
