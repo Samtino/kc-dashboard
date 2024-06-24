@@ -299,10 +299,10 @@ function GetActionButton({
     string,
     { label: string; icon: typeof IconZoom; color: string; variant: string }
   > = {
-    view: { label: 'View', icon: IconZoom, color: 'gray', variant: 'light' },
-    edit: { label: 'Edit', icon: IconPencil, color: 'blue', variant: 'light' },
-    send: { label: 'Send', icon: IconSend, color: 'green', variant: 'light' },
-    delete: { label: 'Delete', icon: IconTrash, color: 'red', variant: 'light' },
+    view: { label: 'View Last Exam', icon: IconZoom, color: 'gray', variant: 'light' },
+    edit: { label: 'Edit Pending Exam', icon: IconPencil, color: 'blue', variant: 'light' },
+    send: { label: 'Send New Exam', icon: IconSend, color: 'green', variant: 'light' },
+    delete: { label: 'Delete Last Exam', icon: IconTrash, color: 'red', variant: 'light' },
     denied: { label: 'No SteamID', icon: IconX, color: 'red', variant: 'light' },
   };
 
