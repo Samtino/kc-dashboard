@@ -57,7 +57,7 @@ export async function getUserStrikes(user_id: User['id']): Promise<Strike[]> {
   try {
     const strikes = await prisma.strike.findMany({
       where: {
-        userId: user_id,
+        user_id,
       },
     });
 

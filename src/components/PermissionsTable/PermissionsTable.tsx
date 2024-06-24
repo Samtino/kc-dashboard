@@ -12,7 +12,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { Application, Permission, Strike, User, UserPermission } from '@prisma/client';
-import { Icon, IconPencil, IconSend, IconTrash, IconZoom } from '@tabler/icons-react';
+import { Icon, IconPencil, IconSend, IconTrash, IconX, IconZoom } from '@tabler/icons-react';
 import { ExamModal } from '../ExamModal/ExamModal';
 import { getCurrentUser } from '@/src/app/services/user';
 import {
@@ -24,10 +24,13 @@ import {
 import { ExamForm } from '../ExamForm/ExamForm';
 
 type userData = {
+  user: User;
   userPerms: UserPermission[];
   applications: Application[];
   strikes: Strike[];
 };
+
+type actionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
 
 const statusColors: Record<string, string> = {
   passed: 'green',
@@ -73,6 +76,7 @@ export function PermissionsTable() {
         const strikes = await getUserStrikes(user.id);
 
         const data = {
+          user,
           userPerms: perms,
           applications,
           strikes,
@@ -147,10 +151,6 @@ function CreateTable({
 
 function CreateRowData({ permsData, userData }: { permsData: Permission[]; userData: userData }) {
   return permsData.map((perm) => {
-    // const userPerm = userData.userPerms.find(
-    //   (curUserPerm) => curUserPerm.permission_id === perm.id
-    // );
-
     const userApp = userData.applications.find((app) => app.permission_id === perm.id);
     const status = userApp?.status ?? 'NONE';
 
@@ -186,6 +186,7 @@ function CreateRowData({ permsData, userData }: { permsData: Permission[]; userD
               status={status}
               permName={perm.name}
               userCooldown={userApp?.next_apply_date}
+              userData={userData.user}
             />
           </Group>
         </Table.Td>
@@ -263,12 +264,22 @@ function GetActionIcon({
   status,
   permName,
   userCooldown,
+  userData,
 }: {
   status: Application['status'];
   permName: string;
   userCooldown?: Application['next_apply_date'];
+  userData: User;
 }) {
-  const canApply = userCooldown ? new Date(userCooldown) < new Date() : true;
+  const onCooldown = userCooldown ? new Date(userCooldown) > new Date() : true;
+
+  if (!userData.steam_id) {
+    return (
+      <>
+        <GetActionButton actionType="denied" permName={permName} disabled />
+      </>
+    );
+  }
 
   switch (status.toLowerCase()) {
     case 'passed':
@@ -280,7 +291,7 @@ function GetActionIcon({
     case 'failed':
       return (
         <>
-          <GetActionButton actionType="send" permName={permName} disabled={canApply} />
+          <GetActionButton actionType="send" permName={permName} disabled={onCooldown} />
         </>
       );
     case 'pending':
@@ -307,7 +318,7 @@ function GetActionButton({
   permName,
   disabled,
 }: {
-  actionType: string;
+  actionType: actionType;
   permName: Permission['name'];
   disabled?: boolean;
 }) {
@@ -319,6 +330,7 @@ function GetActionButton({
     edit: { label: 'Edit', icon: IconPencil, color: 'blue', variant: 'light' },
     send: { label: 'Send', icon: IconSend, color: 'green', variant: 'light' },
     delete: { label: 'Delete', icon: IconTrash, color: 'red', variant: 'light' },
+    denied: { label: 'No SteamID', icon: IconX, color: 'red', variant: 'light' },
   };
 
   const action = actionConfig[actionType];
@@ -327,13 +339,11 @@ function GetActionButton({
   const { icon: IconComponent, variant, color, label } = action;
   const [hidden, { toggle }] = useDisclosure();
 
-  // FIXME: add exam type to modal popup
-
   const title = `${label} ${permName} Exam`;
   return (
     <>
       <ExamModal hidden={hidden} toggle={toggle} title={title}>
-        <ExamForm type={permName} />
+        <ExamForm name={permName} type={actionType} />
       </ExamModal>
       <ActionIcon
         variant={variant}
