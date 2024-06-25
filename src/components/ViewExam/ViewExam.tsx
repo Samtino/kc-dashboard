@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Avatar, Badge, Button, Card, Fieldset, Group, Loader, Stack, Text } from '@mantine/core';
+import { Avatar, Badge, Button, Fieldset, Group, Loader, Stack } from '@mantine/core';
 import type { Application, Question, User } from '@prisma/client';
+import Link from 'next/link';
 import { getUserById } from '@/src/app/services/user';
 import { getQuestions } from '@/src/app/services/permissions';
-import Link from 'next/link';
 
 export function ViewExam({ app }: { app: Application }) {
   const [user, setUser] = useState<User>();
