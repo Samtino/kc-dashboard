@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Container, Fieldset, Group, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { Permission, Question, User } from '@prisma/client';
+import { Question, User } from '@prisma/client';
 import { getQuestions } from '@/src/app/services/permissions';
 import { createNewApplication } from '@/src/app/services/applications';
 
@@ -17,7 +17,7 @@ type actionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
 interface MultipleChoiceComponentProps {
   question: Question;
   selectedValue: string;
-  onSelect: (id: string, value: string) => void;
+  onSelect: (id: number, value: string) => void;
   error: any;
 }
 

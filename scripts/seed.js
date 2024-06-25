@@ -118,6 +118,7 @@ const permissions = [
 async function main() {
   console.log('Deleting all permissions...');
   try {
+    await prisma.application.deleteMany();
     await prisma.question.deleteMany();
     await prisma.permission.deleteMany();
     console.log('Permissions deleted');

@@ -112,7 +112,7 @@ model UserPermission {
 }
 
 model Question {
-  id             String     @id @default(cuid())
+  id             Int        @id @default(autoincrement())
   text           String
   options        String[]
   correct_answer String

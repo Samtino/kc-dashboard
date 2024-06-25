@@ -92,11 +92,13 @@ export default function AdminApplicationsPage() {
                     <ViewExam app={activeApp} />
                   </div>
                 )}
-                <Pagination
-                  total={total}
-                  value={activePage}
-                  onChange={(page) => handlePageChange(perm.id, page)}
-                />
+                <Group justify="space-between">
+                  <Pagination
+                    total={total}
+                    value={activePage}
+                    onChange={(page) => handlePageChange(perm.id, page)}
+                  />
+                </Group>
               </Accordion.Panel>
             </Accordion.Item>
           );
