@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Button, Container, Fieldset, Group, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { Permission, Question } from '@prisma/client';
+import { Permission, Question, User } from '@prisma/client';
 import { getQuestions } from '@/src/app/services/permissions';
+import { createNewApplication } from '@/src/app/services/applications';
 
 type actionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
 
@@ -47,7 +48,15 @@ function MultipleChoice({
   );
 }
 
-export function ExamForm({ permId, type }: { permId: string; type: actionType }) {
+export function ExamForm({
+  permId,
+  type,
+  user_id,
+}: {
+  permId: string;
+  type: actionType;
+  user_id: User['id'];
+}) {
   const [questions, setQuestions] = useState<Question[]>([]);
 
   useEffect(() => {
@@ -111,10 +120,15 @@ export function ExamForm({ permId, type }: { permId: string; type: actionType })
     form.setFieldValue(`${id}`, value);
   };
 
-  // FIXME: actually do something on submit
   return (
     <Container>
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+      <form
+        onSubmit={form.onSubmit((values) =>
+          createNewApplication(user_id, permId, Object.values(values)).then(() => {
+            window.location.reload();
+          })
+        )}
+      >
         {questions.map((question) => (
           <MultipleChoice
             key={question.id}

@@ -284,6 +284,7 @@ function GetActionIcon({
             actionType={actionType}
             perm={perm}
             disabled={action.disabled}
+            userData={userData}
           />
         );
       })}
@@ -295,10 +296,12 @@ function GetActionButton({
   actionType,
   perm,
   disabled,
+  userData,
 }: {
   actionType: ActionType;
   perm: Permission;
   disabled?: boolean;
+  userData: User;
 }) {
   const actionConfig: Record<
     string,
@@ -321,7 +324,7 @@ function GetActionButton({
   return (
     <>
       <ExamModal hidden={hidden} toggle={toggle} title={title}>
-        <ExamForm permId={perm.id} type={actionType} />
+        <ExamForm permId={perm.id} type={actionType} user_id={userData.id} />
       </ExamModal>
       <ActionIcon variant={variant} color={color} radius="lg" onClick={toggle} disabled={disabled}>
         <Tooltip label={label} offset={10} position="left">
