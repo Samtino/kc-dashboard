@@ -49,6 +49,7 @@ model Permission {
   applications   Application[]
   users          UserPermission[]
   strikes        Strike[]
+  questions      Question[]
 }
 
 model Application {
@@ -64,7 +65,17 @@ model Application {
   next_apply_date DateTime?
   created_at      DateTime          @default(now())
   updated_at      DateTime          @updatedAt
+  answers         String[]
 }
+
+// model Answer {
+//   id             String      @id @default(cuid())
+//   question       Question    @relation(fields: [question_id], references: [id])
+//   question_id    String
+//   application    Application @relation(fields: [application_id], references: [id])
+//   application_id String
+//   answer         String
+// }
 
 enum ApplicationStatus {
   PENDING
@@ -98,4 +109,13 @@ model UserPermission {
   permission    Permission @relation(fields: [permission_id], references: [id])
 
   @@id([user_id, permission_id])
+}
+
+model Question {
+  id             String     @id @default(cuid())
+  text           String
+  options        String[]
+  correct_answer String
+  permission     Permission @relation(fields: [permission_id], references: [id])
+  permission_id  String
 }
