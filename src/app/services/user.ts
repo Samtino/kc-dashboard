@@ -49,11 +49,23 @@ export async function updateUser(
   }
 }
 
-export async function getUser(discord_id: string): Promise<User | null> {
+export async function getUser(discord_id: User['discord_id']): Promise<User | null> {
   try {
     return await prisma.user.findUnique({
       where: {
         discord_id,
+      },
+    });
+  } catch (error: any) {
+    return null;
+  }
+}
+
+export async function getUserById(id: User['id']): Promise<User | null> {
+  try {
+    return await prisma.user.findUnique({
+      where: {
+        id,
       },
     });
   } catch (error: any) {

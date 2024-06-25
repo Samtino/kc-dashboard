@@ -54,7 +54,7 @@ const mockdata: LinksGroupProps[] = [
     initiallyOpened: true,
     links: [
       { label: 'Overview', link: '/dashboard/admin' },
-      { label: 'Applications', link: '/dashboard/admin/apps' },
+      { label: 'Applications', link: '/dashboard/admin/applications' },
       { label: 'Events', link: '/dashboard/admin/events' },
     ],
     requiredPermission: ['ADMIN', 'COMMUNITY_STAFF'],
