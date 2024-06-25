@@ -33,11 +33,11 @@ type UserData = {
 type ActionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
 
 const statusColors: Record<string, string> = {
-  passed: 'green',
-  failed: 'red',
-  pending: 'yellow',
-  blacklisted: 'black',
-  none: 'gray',
+  PASSED: 'green',
+  FAILED: 'red',
+  PENDING: 'yellow',
+  BLACKLISTED: 'black',
+  NONE: 'gray',
 };
 
 export function PermissionsTable() {
@@ -156,7 +156,7 @@ function CreateRowData({ perm, userData }: { perm: Permission; userData: UserDat
       <Table.Td>{perm.name}</Table.Td>
       <Table.Td>
         <Center>
-          <Badge color={statusColors[status.toLowerCase()]} variant="filled">
+          <Badge color={statusColors[status.toUpperCase()]} variant="filled">
             {status}
           </Badge>
         </Center>
@@ -180,7 +180,7 @@ function CreateRowData({ perm, userData }: { perm: Permission; userData: UserDat
         <Group justify="center">
           <GetActionIcon
             status={status}
-            permName={perm.name}
+            perm={perm}
             userCooldown={userApp?.next_apply_date}
             userData={userData.user}
           />
@@ -240,12 +240,12 @@ function GetStrikeBadges({ strikes }: { strikes: Strike[] }) {
 
 function GetActionIcon({
   status,
-  permName,
+  perm,
   userCooldown,
   userData,
 }: {
   status: Application['status'];
-  permName: string;
+  perm: Permission;
   userCooldown?: Application['next_apply_date'];
   userData: User;
 }) {
@@ -263,14 +263,14 @@ function GetActionIcon({
   };
 
   const actionTypes: Record<string, ActionType[]> = {
-    passed: ['view'],
-    failed: ['send'],
-    pending: ['edit', 'delete'],
-    blacklisted: [],
-    none: ['send'],
+    PASSED: ['view'],
+    FAILED: ['send'],
+    PENDING: ['edit', 'delete'],
+    BLACKLISTED: [],
+    NONE: ['send'],
   };
 
-  const actions = actionTypes[status.toLowerCase()] || ['send'];
+  const actions = actionTypes[status.toUpperCase()] || ['send'];
 
   return (
     <>
@@ -282,7 +282,7 @@ function GetActionIcon({
           <GetActionButton
             key={actionType}
             actionType={actionType}
-            permName={permName}
+            perm={perm}
             disabled={action.disabled}
           />
         );
@@ -293,11 +293,11 @@ function GetActionIcon({
 
 function GetActionButton({
   actionType,
-  permName,
+  perm,
   disabled,
 }: {
   actionType: ActionType;
-  permName: Permission['name'];
+  perm: Permission;
   disabled?: boolean;
 }) {
   const actionConfig: Record<
@@ -317,11 +317,11 @@ function GetActionButton({
   const { icon: IconComponent, variant, color, label } = action;
   const [hidden, { toggle }] = useDisclosure();
 
-  const title = `${label} ${permName} Exam`;
+  const title = `${perm.name} Exam`;
   return (
     <>
       <ExamModal hidden={hidden} toggle={toggle} title={title}>
-        <ExamForm name={permName} type={actionType} />
+        <ExamForm permId={perm.id} type={actionType} />
       </ExamModal>
       <ActionIcon variant={variant} color={color} radius="lg" onClick={toggle} disabled={disabled}>
         <Tooltip label={label} offset={10} position="left">

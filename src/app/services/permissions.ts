@@ -1,6 +1,13 @@
 'use server';
 
-import type { Application, Permission, Strike, User, UserPermission } from '@prisma/client';
+import type {
+  Application,
+  Permission,
+  Question,
+  Strike,
+  User,
+  UserPermission,
+} from '@prisma/client';
 import prisma from '@/src/db';
 
 export async function getPermissionsData(
@@ -62,6 +69,20 @@ export async function getUserStrikes(user_id: User['id']): Promise<Strike[]> {
     });
 
     return strikes;
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getQuestions(id: Permission['id']): Promise<Question[]> {
+  try {
+    const questions = await prisma.question.findMany({
+      where: {
+        permission_id: id,
+      },
+    });
+
+    return questions;
   } catch (error) {
     return [];
   }

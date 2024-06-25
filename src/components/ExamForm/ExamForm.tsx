@@ -1,36 +1,42 @@
+import { useEffect, useState } from 'react';
 import { Button, Container, Fieldset, Group, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { Permission } from '@prisma/client';
-import { useState } from 'react';
+import { Permission, Question } from '@prisma/client';
+import { getQuestions } from '@/src/app/services/permissions';
 
 type actionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
 
-interface MultipleChoiceProps {
-  id: number;
-  name: string;
-  options: string[];
-  correctAnswers: string;
-}
+// interface MultipleChoiceProps {
+//   id: number;
+//   name: string;
+//   options: string[];
+//   correctAnswers: string;
+// }
 
 interface MultipleChoiceComponentProps {
-  props: MultipleChoiceProps;
+  question: Question;
   selectedValue: string;
-  onSelect: (id: number, value: string) => void;
+  onSelect: (id: string, value: string) => void;
   error: any;
 }
 
-function MultipleChoice({ props, selectedValue, onSelect, error }: MultipleChoiceComponentProps) {
+function MultipleChoice({
+  question,
+  selectedValue,
+  onSelect,
+  error,
+}: MultipleChoiceComponentProps) {
   return (
     <Fieldset m={10}>
       <p style={{ color: error ? 'red' : '' }}>
-        {props.name}
+        {question.text}
         {error && '*'}
       </p>
       <Stack align="flex-start">
-        {props.options.map((option) => (
+        {question.options.map((option) => (
           <Button
             key={option}
-            onClick={() => onSelect(props.id, option)}
+            onClick={() => onSelect(question.id, option)}
             color={selectedValue === option ? 'blue' : 'gray'}
           >
             {option}
@@ -41,8 +47,20 @@ function MultipleChoice({ props, selectedValue, onSelect, error }: MultipleChoic
   );
 }
 
-export function ExamForm({ name, type }: { name: Permission['name']; type: actionType }) {
-  // FIXME: get questions from the db using the name as the key
+export function ExamForm({ permId, type }: { permId: string; type: actionType }) {
+  const [questions, setQuestions] = useState<Question[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setQuestions(await getQuestions(permId));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchData();
+  }, [permId]);
 
   let color;
   let buttonText;
@@ -62,34 +80,7 @@ export function ExamForm({ name, type }: { name: Permission['name']; type: actio
   }
 
   // FIXME: replace with database questions
-  const questions: MultipleChoiceProps[] = [
-    {
-      id: 1,
-      name: 'How many strikes will cause you to lose permissions for Company Command?',
-      options: ['4', '2', '3'],
-      correctAnswers: '2',
-    },
-    {
-      id: 2,
-      name: 'True or False: Company Command is permitted to operate outside of a FOB or Operations Base?',
-      options: ['True', 'False'],
-      correctAnswers: 'False',
-    },
-    {
-      id: 3,
-      name: 'True or False: Company Commander should have complete knowledge of ALL Standard Operating Procedures?',
-      options: ['True', 'False'],
-      correctAnswers: 'True',
-    },
-    {
-      id: 4,
-      name: 'Which Frequencies are you required to monitor as Company Commander?',
-      options: ['LR 031.000 & SR 160.000', 'LR 080.000 & SR 070.000', 'LR 030.000 & SR 036.000'],
-      correctAnswers: 'LR 030.000 & SR 036.000',
-    },
-  ];
-
-  const initialValues: { [key: number]: string } = {};
+  const initialValues: { [key: string]: string } = {};
   questions.forEach((question) => {
     initialValues[question.id] = '';
   });
@@ -100,7 +91,7 @@ export function ExamForm({ name, type }: { name: Permission['name']; type: actio
       ...initialValues,
     },
     validate: (values) => {
-      const errors: { [key: number]: string } = {};
+      const errors: { [key: string]: string } = {};
       for (const key in values) {
         if (!values[key]) {
           errors[key] = 'This field is required';
@@ -110,9 +101,9 @@ export function ExamForm({ name, type }: { name: Permission['name']; type: actio
     },
   });
 
-  const [selectedValues, setSelectedValues] = useState<{ [key: number]: string }>({});
+  const [selectedValues, setSelectedValues] = useState<{ [key: string]: string }>({});
 
-  const handleSelect = (id: number, value: string) => {
+  const handleSelect = (id: Question['id'], value: string) => {
     setSelectedValues((prevValues) => ({
       ...prevValues,
       [id]: value,
@@ -127,7 +118,7 @@ export function ExamForm({ name, type }: { name: Permission['name']; type: actio
         {questions.map((question) => (
           <MultipleChoice
             key={question.id}
-            props={question}
+            question={question}
             selectedValue={selectedValues[question.id] || ''}
             onSelect={handleSelect}
             error={form.errors[question.id]}
