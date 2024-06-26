@@ -1,9 +1,13 @@
+'use server';
+
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function login(): Promise<void> {
+  console.log('Login button pressed!');
+
   if (await cookies().has('user')) {
+    console.log('User already logged in, redirecting to dashboard');
     return redirect('/dashboard');
   }
 
@@ -13,5 +17,5 @@ export async function GET() {
 
   const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scopes.join('+')}`;
 
-  return NextResponse.redirect(discordAuthUrl);
+  return redirect(discordAuthUrl);
 }

@@ -13,10 +13,10 @@ import {
   Alert,
 } from '@mantine/core';
 import { IconCheck, IconBrandGithub, IconBrandDiscord } from '@tabler/icons-react';
-import Link from 'next/link';
 import logo from '@/src/public/icon.png';
 import classes from './Landing.module.css';
 import { ColorSchemeToggle } from '@/src/components/ColorSchemeToggle/ColorSchemeToggle';
+import { login } from './services/auth';
 
 export default function Landing() {
   return (
@@ -63,13 +63,14 @@ export default function Landing() {
 
           <Group mt={30}>
             <Button
-              component={Link}
-              href="/api/auth/discord/login"
               leftSection={<IconBrandDiscord />}
               radius="xl"
               size="md"
               className={classes.control}
               color="#7289DA"
+              onClick={() => {
+                login();
+              }}
             >
               Sign in with Discord
             </Button>
