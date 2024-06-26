@@ -1,46 +1,47 @@
-import NextImage from 'next/image';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { Button, Container, Fieldset, Group, Image, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Question, User } from '@prisma/client';
 import { getQuestions } from '@/src/app/services/permissions';
 import { createNewApplication } from '@/src/app/services/applications';
+import { MultipleChoiceQuestion, QuestionProps } from '@/lib/types';
 
 type actionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
 
-interface MultipleChoiceComponentProps {
-  question: Question;
-  selectedValue: string;
-  onSelect: (id: number, value: string) => void;
-  error: any;
+function MultipleChoice({ question, selectedValue, onSelect }: QuestionProps) {
+  return (
+    <Stack align="flex-start" p={10}>
+      {question.question_data.options.map((option) => (
+        <Button
+          key={`${question.id}-${option}`}
+          onClick={() => onSelect(question.id, option)}
+          color={selectedValue === option ? 'blue' : 'gray'}
+        >
+          {option}
+        </Button>
+      ))}
+    </Stack>
+  );
 }
 
-function MultipleChoice({
-  question,
-  selectedValue,
-  onSelect,
-  error,
-}: MultipleChoiceComponentProps) {
+function TrueFalse({ question, selectedValue, onSelect }: QuestionProps) {
   return (
-    <Fieldset m={10}>
-      <Text c={error ? 'red' : ''} p={10}>
-        {question.text}
-      </Text>
-      {question.image_url ? (
-        <Image src={question.image_url} p={10} width="80%" height="auto" alt="Question image" />
-      ) : null}
-      <Stack align="flex-start" p={10}>
-        {question.options.map((option) => (
-          <Button
-            key={option}
-            onClick={() => onSelect(question.id, option)}
-            color={selectedValue === option ? 'blue' : 'gray'}
-          >
-            {option}
-          </Button>
-        ))}
-      </Stack>
-    </Fieldset>
+    <Stack align="flex-start" p={10}>
+      <Button
+        key={`${question.id}-true`}
+        onClick={() => onSelect(question.id, 'True')}
+        color={selectedValue === 'True' ? 'blue' : 'gray'}
+      >
+        True
+      </Button>
+      <Button
+        key={`${question.id}-false`}
+        onClick={() => onSelect(question.id, 'False')}
+        color={selectedValue === 'False' ? 'blue' : 'gray'}
+      >
+        False
+      </Button>
+    </Stack>
   );
 }
 
@@ -118,21 +119,61 @@ export function ExamForm({
   return (
     <Container>
       <form
-        onSubmit={form.onSubmit((values) =>
-          createNewApplication(user_id, permId, Object.values(values)).then(() => {
-            window.location.reload();
-          })
+        onSubmit={form.onSubmit(
+          (values) =>
+            createNewApplication(user_id, permId, Object.values(values)).then(() => {
+              window.location.reload();
+            })
+          // console.log('createNewApplication', user_id, permId, Object.values(values))
         )}
       >
-        {questions.map((question) => (
-          <MultipleChoice
-            key={question.id}
-            question={question}
-            selectedValue={selectedValues[question.id] || ''}
-            onSelect={handleSelect}
-            error={form.errors[question.id]}
-          />
-        ))}
+        {questions.map((question) => {
+          function Element({ children }: { children: ReactNode }) {
+            return (
+              <Fieldset key={question.id} m={10}>
+                <Text c={form.errors[question.id] ? 'red' : ''} p={10}>
+                  {question.text}
+                </Text>
+                {question.image_url ? (
+                  <Image
+                    src={question.image_url}
+                    p={10}
+                    width="80%"
+                    height="auto"
+                    alt="Question image"
+                  />
+                ) : null}
+
+                {children}
+              </Fieldset>
+            );
+          }
+
+          switch (question.type) {
+            case 'MULTIPLE_CHOICE':
+              return (
+                <Element key={question.id}>
+                  <MultipleChoice
+                    question={question as MultipleChoiceQuestion}
+                    selectedValue={selectedValues[question.id] || ''}
+                    onSelect={handleSelect}
+                  />
+                </Element>
+              );
+            case 'TRUE_FALSE':
+              return (
+                <Element key={question.id}>
+                  <TrueFalse
+                    question={question as MultipleChoiceQuestion}
+                    selectedValue={selectedValues[question.id] || ''}
+                    onSelect={handleSelect}
+                  />
+                </Element>
+              );
+            default:
+              return <p key={question.id}>{question.type} is not handled</p>;
+          }
+        })}
 
         <Group justify="flex-end" mt="md">
           <Button type="submit" color={color}>

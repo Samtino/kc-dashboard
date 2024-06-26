@@ -4,6 +4,7 @@ import type { Application, Question, User } from '@prisma/client';
 import Link from 'next/link';
 import { getUserById } from '@/src/app/services/user';
 import { getQuestions } from '@/src/app/services/permissions';
+import { MultipleChoiceQuestion } from '@/lib/types';
 
 export function ViewExam({ app }: { app: Application }) {
   const [user, setUser] = useState<User>();
@@ -53,15 +54,29 @@ export function ViewExam({ app }: { app: Application }) {
         <p>Answers:</p>
         <Stack>
           {permission?.map((question) => {
-            const isCorrect = app.answers.includes(question.correct_answer);
-            const answer = app.answers.find((ans) => question.options.includes(ans));
-            return (
-              <Fieldset key={question.id} legend={question.text}>
-                <Badge color={isCorrect ? 'green' : 'red'} variant="light">
-                  {answer}
-                </Badge>
-              </Fieldset>
-            );
+            let isCorrect;
+            let answer;
+            if (question.type === 'MULTIPLE_CHOICE' || question.type === 'TRUE_FALSE') {
+              const { question_data } = question as MultipleChoiceQuestion;
+              let { options } = question_data;
+
+              if (!options && question.type === 'TRUE_FALSE') {
+                options = ['True', 'False'];
+              }
+
+              isCorrect = app.answers.includes(question_data.correct_answer);
+              answer = app.answers.find((ans) => options.includes(ans));
+
+              return (
+                <Fieldset key={question.id} legend={question.text}>
+                  <Badge color={isCorrect ? 'green' : 'red'} variant="light">
+                    {answer}
+                  </Badge>
+                </Fieldset>
+              );
+            }
+
+            return <p key={question.id}>{question.type} is not handled</p>;
           })}
         </Stack>
 
