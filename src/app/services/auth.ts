@@ -4,10 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function login(): Promise<void> {
-  console.log('Login button pressed!');
-
   if (await cookies().has('user')) {
-    console.log('User already logged in, redirecting to dashboard');
     return redirect('/dashboard');
   }
 
