@@ -114,6 +114,7 @@ model UserPermission {
 model Question {
   id             Int        @id @default(autoincrement())
   text           String
+  image_url      String?
   options        String[]
   correct_answer String
   permission     Permission @relation(fields: [permission_id], references: [id])

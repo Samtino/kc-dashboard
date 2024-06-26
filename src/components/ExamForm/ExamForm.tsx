@@ -1,18 +1,12 @@
+import NextImage from 'next/image';
 import { useEffect, useState } from 'react';
-import { Button, Container, Fieldset, Group, Stack } from '@mantine/core';
+import { Button, Container, Fieldset, Group, Image, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Question, User } from '@prisma/client';
 import { getQuestions } from '@/src/app/services/permissions';
 import { createNewApplication } from '@/src/app/services/applications';
 
 type actionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
-
-// interface MultipleChoiceProps {
-//   id: number;
-//   name: string;
-//   options: string[];
-//   correctAnswers: string;
-// }
 
 interface MultipleChoiceComponentProps {
   question: Question;
@@ -29,11 +23,13 @@ function MultipleChoice({
 }: MultipleChoiceComponentProps) {
   return (
     <Fieldset m={10}>
-      <p style={{ color: error ? 'red' : '' }}>
+      <Text c={error ? 'red' : ''} p={10}>
         {question.text}
-        {error && '*'}
-      </p>
-      <Stack align="flex-start">
+      </Text>
+      {question.image_url ? (
+        <Image src={question.image_url} p={10} width="80%" height="auto" alt="Question image" />
+      ) : null}
+      <Stack align="flex-start" p={10}>
         {question.options.map((option) => (
           <Button
             key={option}
@@ -88,7 +84,6 @@ export function ExamForm({
       break;
   }
 
-  // FIXME: replace with database questions
   const initialValues: { [key: string]: string } = {};
   questions.forEach((question) => {
     initialValues[question.id] = '';

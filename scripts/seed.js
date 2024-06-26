@@ -66,6 +66,108 @@ const permissions = [
   {
     name: 'Platoon Leader',
     required_hours: 100,
+    questions: [
+      {
+        text: 'How many strikes will cause you to lose permissions for Platoon Leader?',
+        options: ['4', '3', '2'],
+        correct_answer: '2',
+      },
+      {
+        text: 'True or False: As Platoon Leader are you authorized to operate an Armored asset if you have perms?',
+        options: ['True', 'False'],
+        correct_answer: 'False',
+      },
+      {
+        text: 'What frequencies are you required to monitor as Platoon Leader?',
+        options: [
+          'LR 080.000, LR 031.000 & SR 160.000',
+          'LR 030.000, LR 031.000 & SR 160.000',
+          'LR 080.000, LR 081.000 & SR 070.000',
+        ],
+        correct_answer: 'LR 030.000, LR 031.000 & SR 160.000',
+      },
+      {
+        text: 'Who can authorize danger close fire missions?',
+        options: ['Assassin 6-6', 'Platoon Leaders', 'Squad Leaders', 'TACP'],
+        correct_answer: 'Platoon Leader',
+      },
+      {
+        text: 'True or False: Platoon Leaders are allowed to be on the front lines LEADING assaults?',
+        options: ['True', 'False'],
+        correct_answer: 'False',
+      },
+      {
+        text: 'Who has direct command over Butcher?',
+        options: ['Platoon Leaders', 'Company Command', 'Both'],
+        correct_answer: 'Platoon Leaders',
+      },
+      {
+        text: '1st Platoon is assaulting a civilian OPFOR sector, 6-6 radios that a battlegroup has been spotted heading for a BLUFOR sector 3,000m away and orders all of 1st Platoon to fall back immediately to safe LZ marked on map for extraction and new tasking is to stop the battlegroup. Do you follow 6-6 orders, or try to capture the OPFOR sector?',
+        options: ['No, continue assaulting the civilian OPFOR sector', 'Yes, follow 6-6 orders.'],
+        correct_answer: 'Yes, follow 6-6 orders.',
+      },
+      {
+        text: 'Is OGRE a direct combat unit?',
+        options: ['Yes', 'No'],
+        correct_answer: 'No',
+      },
+      {
+        text: 'What is the purpose of Banshee?',
+        options: [
+          'QRF response team',
+          'Tactical Air Control Party',
+          'Quick reaction medical response team',
+        ],
+        correct_answer: 'Quick reaction medical response team',
+      },
+      {
+        text: 'At what range is danger close approval needed for using HE.',
+        options: ['300m', '400m', '200m'],
+        correct_answer: '200m',
+      },
+      {
+        text: " What is Stalker's main priorities?",
+        options: ['Close Air Support', 'Indirect fire', 'Supply logistics & inserting infantry'],
+        correct_answer: 'Supply logistics & inserting infantry',
+      },
+      {
+        text: 'What does the abbreviation (OP) stand for?',
+        options: ['Observation Post', 'Original Position', 'Origin Point'],
+        correct_answer: 'Observation Post',
+      },
+      {
+        text: 'What does the abbreviation (RP) stand for?',
+        options: ['Refuel Point', 'Radio Position', 'Rally Point'],
+        correct_answer: 'Rally Point',
+      },
+      {
+        text: 'Select the option that shows the sector threat levels from highest to lowest.',
+        options: [
+          'Military, Radio, Capital, Factory, Town',
+          'Town, Factory, Military, Radio, Capital',
+          'Capital, Military, Radio, Factory, Town',
+        ],
+        correct_answer: 'Capital, Military, Radio, Factory, Town',
+      },
+      {
+        text: 'Name & IFF',
+        image_url: 'https://i.imgur.com/pY1mr4J.jpeg',
+        options: ['M1A2 Abrams Foe', 'T-72 Foe', 'BMD- Foe'],
+        correct_answer: 'T-72 Foe',
+      },
+      {
+        text: 'Name & IFF',
+        image_url: 'https://i.imgur.com/subB6fl.jpeg',
+        options: ['ZSu-Shilka Foe', 'Ural-Zu Foe', 'BMP- Foe'],
+        correct_answer: 'ZSu-Shilka Foe',
+      },
+      {
+        text: 'M1126 Stryker Foe',
+        image_url: '',
+        options: ['M1126 Stryker Foe', 'BTR Foe', 'BMD Foe'],
+        correct_answer: 'BTR Foe',
+      },
+    ],
   },
   {
     name: 'Platoon TACP',
@@ -139,6 +241,7 @@ async function main() {
               text: question.text,
               options: question.options,
               correct_answer: question.correct_answer,
+              image_url: question.image_url || null,
             })),
           }
         : undefined,
