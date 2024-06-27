@@ -31,6 +31,7 @@ export function PermissionsTable() {
         setStandardPerms(await getPermissionsData('standard'));
         setAssetPerms(await getPermissionsData('asset_exam'));
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error(e);
       } finally {
         setLoading(false);

@@ -59,6 +59,7 @@ export function ExamForm({
       try {
         setQuestions(await getQuestions(permId));
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error(e);
       }
     };

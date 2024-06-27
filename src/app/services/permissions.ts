@@ -43,6 +43,7 @@ export async function getPrerequisites(id: Permission['id']): Promise<Permission
 
     return permission ? permission.prerequisites : [];
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
     return [];
   }
