@@ -4,9 +4,7 @@ import { useForm } from '@mantine/form';
 import { Question, User } from '@prisma/client';
 import { getQuestions } from '@/src/app/services/permissions';
 import { createNewApplication } from '@/src/app/services/applications';
-import { MultipleChoiceQuestion, QuestionProps } from '@/lib/types';
-
-type actionType = 'view' | 'edit' | 'send' | 'delete' | 'denied';
+import { ActionType, MultipleChoiceQuestion, QuestionProps } from '@/lib/types';
 
 function MultipleChoice({ question, selectedValue, onSelect }: QuestionProps) {
   return (
@@ -51,7 +49,7 @@ export function ExamForm({
   user_id,
 }: {
   permId: string;
-  type: actionType;
+  type: ActionType;
   user_id: User['id'];
 }) {
   const [questions, setQuestions] = useState<Question[]>([]);

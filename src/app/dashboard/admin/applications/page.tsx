@@ -1,7 +1,7 @@
 'use client';
 
 import { Accordion, Badge, Container, Group, Pagination, Title } from '@mantine/core';
-import { Application, Permission } from '@prisma/client';
+import { Application, Permission, User } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { getPermissionsData } from '@/src/app/services/permissions';
 import { getPendingApplications } from '@/src/app/services/applications';
@@ -64,6 +64,10 @@ export default function AdminApplicationsPage() {
         activePage: page,
       },
     }));
+  };
+
+  const passButton = (app: Application, reviewer: User) => {
+    // Mark the application as passed by the reviewer
   };
 
   return (

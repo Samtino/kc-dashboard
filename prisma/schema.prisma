@@ -41,15 +41,16 @@ enum Role {
 }
 
 model Permission {
-  id             String           @id @default(cuid())
-  name           String           @unique
-  required_hours Int
-  prerequisites  String[]
-  asset_exam     Boolean          @default(false)
-  applications   Application[]
-  users          UserPermission[]
-  strikes        Strike[]
-  questions      Question[]
+  id               String           @id @default(cuid())
+  name             String           @unique
+  required_hours   Int
+  prerequisites    Permission[]     @relation("PrerequisiteRelations")
+  prerequisite_for Permission[]     @relation("PrerequisiteRelations")
+  asset_exam       Boolean          @default(false)
+  applications     Application[]
+  users            UserPermission[]
+  strikes          Strike[]
+  questions        Question[]
 }
 
 model Application {

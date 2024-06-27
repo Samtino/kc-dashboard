@@ -32,6 +32,22 @@ export async function getPermissionsData(
   }
 }
 
+export async function getPrerequisites(id: Permission['id']): Promise<Permission[]> {
+  try {
+    const permission = await prisma.permission.findUnique({
+      where: { id },
+      include: {
+        prerequisites: true,
+      },
+    });
+
+    return permission ? permission.prerequisites : [];
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 export async function getUserPermissions(user_id: User['id']): Promise<UserPermission[]> {
   try {
     const userPerms = await prisma.userPermission.findMany({

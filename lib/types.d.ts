@@ -1,3 +1,13 @@
+export type UserData = {
+  id: User['id'];
+  user: User;
+  userPerms: UserPermission[];
+  applications: Application[];
+  strikes: Strike[];
+};
+
+type ActionType = 'view' | 'edit' | 'send' | 'delete' | 'denied' | 'prereqs';
+
 export interface QuestionProps {
   question: MultipleChoiceQuestion;
   selectedValue: string;

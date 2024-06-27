@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -253,10 +250,19 @@ async function main() {
 
   console.log('Seeding permissions...');
   for (const permission of permissions) {
+    const prerequisites = permission.prerequisites
+      ? await prisma.permission.findMany({
+          where: { name: { in: permission.prerequisites } },
+          select: { id: true },
+        })
+      : [];
+
     const permData = {
       name: permission.name,
       required_hours: permission.required_hours,
-      prerequisites: permission.prerequisites || [],
+      prerequisites: {
+        connect: prerequisites.map((p) => ({ id: p.id })),
+      },
       asset_exam: permission.asset_exam || false,
     };
 
