@@ -81,6 +81,9 @@ export function ExamForm({
       color = 'red';
       buttonText = 'Delete';
       break;
+    default:
+      color = 'gray';
+      buttonText = 'Close';
   }
 
   const initialValues: { [key: string]: string } = {};
