@@ -16,3 +16,15 @@ export async function login(): Promise<void> {
 
   return redirect(discordAuthUrl);
 }
+
+export async function logout(): Promise<void> {
+  const userCookie = cookies().get('user');
+
+  if (!userCookie) {
+    return redirect('/');
+  }
+
+  cookies().delete('user');
+
+  return redirect('/');
+}
