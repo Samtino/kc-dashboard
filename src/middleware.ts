@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 import type { NextRequest } from 'next/server';
+import type { User } from '@prisma/client';
 import { decrypt } from './app/services/encryption';
-import { IUser } from './Model/User';
 
 async function getUser(req: NextRequest) {
   try {
@@ -15,7 +15,9 @@ async function getUser(req: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
-  const currentUser: IUser = await getUser(request);
+  // return; // FIXME: fix with Prisma DB
+
+  const currentUser: User = await getUser(request);
   const path = request.nextUrl.pathname;
 
   // TODO: Redirect to /login instead after implementing login page
@@ -24,7 +26,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Ignore middleware for sys-admins
-  if (currentUser && currentUser.roles.sysAdmin) {
+  if (currentUser && currentUser.roles.includes('SYS_ADMIN')) {
     return;
   }
 
@@ -34,22 +36,30 @@ export async function middleware(request: NextRequest) {
   }
 
   // Prevent users from accessing kog page if they are not a kog member
-  if (currentUser && !currentUser.roles.KOG && path.startsWith('/dashboard/kog')) {
+  if (currentUser && !currentUser.roles.includes('KOG') && path.startsWith('/dashboard/kog')) {
     return Response.redirect(new URL('/dashboard', request.url));
   }
 
   // Prevent users from accessing kt page if they are not a kt member
-  if (currentUser && !currentUser.roles.KT && path.startsWith('/dashboard/kt')) {
+  if (currentUser && !currentUser.roles.includes('KT') && path.startsWith('/dashboard/kt')) {
     return Response.redirect(new URL('/dashboard', request.url));
   }
 
   // Prevent users from accessing admin pages if they are not an admin
-  if (currentUser && !currentUser.roles.admin && path.startsWith('/dashboard/admin')) {
+  if (
+    currentUser &&
+    !currentUser.roles.includes('ADMIN' || 'COMMUNITY_STAFF') &&
+    path.startsWith('/dashboard/admin')
+  ) {
     return Response.redirect(new URL('/dashboard', request.url));
   }
 
   // Prevent admins from accessing CS pages if they are not a CS
-  if (currentUser && !currentUser.roles.cs && path.startsWith('/dashboard/admin/manage')) {
+  if (
+    currentUser &&
+    !currentUser.roles.includes('COMMUNITY_STAFF') &&
+    path.startsWith('/dashboard/admin/manage')
+  ) {
     return Response.redirect(new URL('/dashboard', request.url), 403);
   }
 }

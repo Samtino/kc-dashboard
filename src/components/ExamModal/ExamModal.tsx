@@ -12,7 +12,7 @@ export function ExamModal({
   children?: React.ReactNode;
 }) {
   return (
-    <Modal title={title || ''} size="md" padding="md" opened={hidden} onClose={toggle} centered>
+    <Modal title={title || ''} size="auto" padding="md" opened={hidden} onClose={toggle} centered>
       {children}
     </Modal>
   );

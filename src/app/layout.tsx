@@ -1,7 +1,7 @@
-import '@mantine/core/styles.css';
 import React from 'react';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 import { theme } from '../../theme';
+import '@mantine/core/styles.css';
 
 export const metadata = {
   title: 'KC Permissions Dashboard',
@@ -9,12 +9,14 @@ export const metadata = {
     'A website for viewing and applying for permisions on the Karma Company Liberation Server!',
 };
 
-export default function RootLayout({ children }: { children: any }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const initialColorScheme = 'dark';
+
   return (
-    <html lang="en">
+    <html lang="en" data-mantine-color-scheme={initialColorScheme}>
       <head>
         {/* <script src="http://localhost:8097" async></script> */}
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme={initialColorScheme} />
         <link rel="shortcut icon" href="/icon.png" />
         <meta
           name="viewport"

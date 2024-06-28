@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// Prisma Configuration
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Models
+
+model User {
+  id                     Int              @id @default(autoincrement())
+  discord_id             String           @unique
+  discord_username       String
+  discord_avatar_url     String           @default("https://cdn.discordapp.com/embed/avatars/0.png")
+  steam_id               String?          @unique
+  bmid                   String?          @unique
+  roles                  Role[]           @unique
+  permissions            UserPermission[]
+  applications           Application[]
+  strikes                Strike[]
+  processed_applications Application[]    @relation("ProcessedBy")
+  created_at             DateTime         @default(now())
+  updated_at             DateTime         @updatedAt
+}
+
+enum Role {
+  SYS_ADMIN
+  COMMUNITY_STAFF
+  ADMIN
+  KOG
+  KT
+}
+
+model Permission {
+  id               String           @id @default(cuid())
+  name             String           @unique
+  required_hours   Int
+  prerequisites    Permission[]     @relation("PrerequisiteRelations")
+  prerequisite_for Permission[]     @relation("PrerequisiteRelations")
+  asset_exam       Boolean          @default(false)
+  applications     Application[]
+  users            UserPermission[]
+  strikes          Strike[]
+  questions        Question[]
+}
+
+model Application {
+  id              String            @id @default(cuid())
+  user            User              @relation(fields: [user_id], references: [id])
+  user_id         Int
+  permission      Permission        @relation(fields: [permission_id], references: [id])
+  permission_id   String
+  status          ApplicationStatus
+  processed_by    User?             @relation("ProcessedBy", fields: [processed_by_id], references: [id])
+  processed_by_id Int?
+  processed_at    DateTime?
+  next_apply_date DateTime?
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  answers         String[]
+}
+
+enum ApplicationStatus {
+  PENDING
+  PASSED
+  FAILED
+  BLACKLISTED
+  NONE
+}
+
+model Strike {
+  id            String     @id @default(cuid())
+  type          StrikeType
+  user          User       @relation(fields: [user_id], references: [id])
+  user_id       Int
+  permission    Permission @relation(fields: [permission_id], references: [id])
+  permission_id String
+  reason        String?
+  created_at    DateTime   @default(now())
+}
+
+enum StrikeType {
+  WARNING
+  STRIKE1
+  STRIKE2
+}
+
+model UserPermission {
+  user_id       Int
+  permission_id String
+  user          User       @relation(fields: [user_id], references: [id])
+  permission    Permission @relation(fields: [permission_id], references: [id])
+
+  @@id([user_id, permission_id])
+}
+
+model Question {
+  id            Int          @id @default(autoincrement())
+  text          String
+  image_url     String?
+  permission    Permission   @relation(fields: [permission_id], references: [id])
+  permission_id String
+  type          QuestionType
+  question_data Json
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  MULTIPLE_SELECT
+  TRUE_FALSE
+  SHORT_ANSWER
+  CONFIRMATION
+}

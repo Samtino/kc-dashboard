@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { User } from '@prisma/client';
 import { encrypt } from '@/src/app/services/encryption';
 import { createUser, getUser, updateRoles, updateUser } from '@/src/app/services/user';
 
@@ -71,9 +72,7 @@ export async function GET(request: NextRequest) {
 
     user = await getUser(userData.id);
 
-    const encryptedData = await encrypt(JSON.stringify(user));
-
-    response.cookies.set('user', encryptedData, {
+    response.cookies.set('user', await encrypt(user as User), {
       path: '/',
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
