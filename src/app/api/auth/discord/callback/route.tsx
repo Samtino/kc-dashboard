@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { User } from '@prisma/client';
-import { encrypt } from '@/src/app/services/encryption';
-import { createUser, getUser, updateRoles, updateUser } from '@/src/app/services/user';
+import { encrypt } from '@/src/services/encryption';
+import { createUser, getUser, updateRoles, updateUser } from '@/src/services/user';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

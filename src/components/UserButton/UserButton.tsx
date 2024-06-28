@@ -4,7 +4,7 @@ import { User } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import classes from './UserButton.module.css';
-import { getCurrentUser } from '@/src/app/services/user';
+import { getCurrentUser } from '@/src/services/user';
 
 // FIXME: Fix popup menu not appearing for any other than the success case (user is loaded)
 

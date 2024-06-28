@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 import type { NextRequest } from 'next/server';
 import type { User } from '@prisma/client';
-import { decrypt } from './app/services/encryption';
+import { decrypt } from './services/encryption';
 
 async function getUser(req: NextRequest) {
   try {

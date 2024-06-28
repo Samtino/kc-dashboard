@@ -9,7 +9,7 @@ import { User } from '@prisma/client';
 import { ColorSchemeToggle, LinksGroup, UserButton } from '@/src/components';
 import classes from './Dashboard.module.css';
 import icon from '@/src/public/icon.png';
-import { getCurrentUser } from '@/src/app/services/user';
+import { getCurrentUser } from '@/src/services/user';
 import { LinksGroupProps } from '@/src/components/NavbarLinksGroup/NavbarLinksGroup';
 
 const mockdata: LinksGroupProps[] = [
