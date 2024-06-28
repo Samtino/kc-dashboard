@@ -18,6 +18,8 @@ export async function login(): Promise<void> {
 }
 
 export async function logout(): Promise<void> {
+  // 'use client';
+
   const userCookie = cookies().get('user');
 
   if (!userCookie) {
