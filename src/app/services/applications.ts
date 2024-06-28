@@ -1,7 +1,7 @@
 'use server';
 
 import { Application, Permission, User } from '@prisma/client';
-import prisma from '@/src/db';
+import prisma from '@/lib/prisma';
 
 export async function createNewApplication(
   user_id: User['id'],

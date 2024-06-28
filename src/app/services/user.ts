@@ -3,7 +3,7 @@
 import type { User } from '@prisma/client';
 import { cookies } from 'next/headers';
 import { decrypt } from './encryption';
-import prisma from '@/src/db';
+import prisma from '@/lib/prisma';
 
 export async function createUser(
   discord_id: string,

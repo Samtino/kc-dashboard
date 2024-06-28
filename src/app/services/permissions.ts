@@ -8,7 +8,7 @@ import type {
   User,
   UserPermission,
 } from '@prisma/client';
-import prisma from '@/src/db';
+import prisma from '@/lib/prisma';
 
 export async function getPermissionsData(
   examType: 'standard' | 'asset_exam'
