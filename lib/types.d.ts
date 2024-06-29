@@ -1,13 +1,33 @@
+import type {
+  Application,
+  Permission,
+  Question,
+  Strike,
+  User,
+  UserPermission,
+} from '@prisma/client';
+
+// Database item data types
 export type UserData = {
   id: User['id'];
   user: User;
-  userPerms: UserPermission[];
+  roles: User['roles'];
+  permissions: UserPermission[];
   applications: Application[];
   strikes: Strike[];
 };
 
+export type PermissionData = {
+  id: Permission['id'];
+  permission: Permission;
+  questions: Question[];
+  prerequisites: Permission[];
+  prerequisitesFor: Permission[];
+};
+
 type ActionType = 'view' | 'edit' | 'send' | 'delete' | 'denied' | 'prereqs';
 
+// Application question data types
 export interface QuestionProps {
   question: MultipleChoiceQuestion;
   selectedValue: string;
