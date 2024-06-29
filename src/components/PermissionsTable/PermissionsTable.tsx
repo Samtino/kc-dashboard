@@ -1,3 +1,5 @@
+// TODO: parallelize the fetching of user data and permissions data
+
 import { Center, Loader, Paper, Table } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { Permission, User } from '@prisma/client';
