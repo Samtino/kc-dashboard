@@ -4,7 +4,9 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function login(): Promise<void> {
-  if (await cookies().has('user')) {
+  const userCookie = cookies().get('user');
+
+  if (userCookie) {
     return redirect('/dashboard');
   }
 

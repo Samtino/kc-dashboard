@@ -17,7 +17,7 @@ export function DiscordLoginButton() {
       size="md"
       color="#7289DA"
       onClick={() => {
-        handleClicked;
+        handleClicked();
       }}
     >
       Sign in with Discord
