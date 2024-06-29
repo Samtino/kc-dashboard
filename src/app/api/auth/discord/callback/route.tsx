@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { User } from '@prisma/client';
-import { encrypt } from '@/src/app/services/encryption';
-import { createUser, getUser, updateRoles, updateUser } from '@/src/app/services/user';
+import { encrypt } from '@/src/services/encryption';
+import { createUser, getUser, updateRoles, updateUser } from '@/src/services/user';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -22,18 +22,20 @@ export async function GET(request: NextRequest) {
   params.append('grant_type', 'authorization_code');
   params.append('redirect_uri', redirectUri || '');
 
-  const tokenResponse = await fetch('https://discord.com/api/v10/oauth2/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: params.toString(),
-  });
+  try {
+    const tokenResponse = await fetch('https://discord.com/api/v10/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+    });
 
-  const tokenData = await tokenResponse.json();
+    const tokenData = await tokenResponse.json();
 
-  if (tokenData.access_token) {
-    const response = NextResponse.redirect(new URL('/dashboard', request.url));
+    if (!tokenData.access_token) {
+      return NextResponse.redirect(new URL('/?error=TokenExchangeFailed', request.url));
+    }
 
     const guildResponse = await fetch(
       `https://discord.com/api/users/@me/guilds/${process.env.GUILD_ID}/member`,
@@ -43,10 +45,11 @@ export async function GET(request: NextRequest) {
         },
       }
     );
+
     const guildData = await guildResponse.json();
 
-    // TODO: take to a page to join the KarmaCommunity discord server
-    if (guildData.joined_at === undefined) {
+    // TODO: Add new page to join the KC Discord if user is not in the guild
+    if (!guildData.joined_at) {
       return NextResponse.redirect(new URL('/?error=NotInGuild', request.url));
     }
 
@@ -63,14 +66,16 @@ export async function GET(request: NextRequest) {
     let user = await getUser(userData.id);
 
     if (!user) {
-      createUser(userData.id, userData.name, userData.avatar);
+      await createUser(userData.id, userData.name, userData.avatar);
     } else {
-      updateUser(userData.id, userData.name, userData.avatar);
+      await updateUser(userData.id, userData.name, userData.avatar);
     }
 
-    updateRoles(userData.id, guildData);
+    await updateRoles(userData.id, guildData);
 
     user = await getUser(userData.id);
+
+    const response = NextResponse.redirect(new URL('/dashboard', request.url));
 
     response.cookies.set('user', await encrypt(user as User), {
       path: '/',
@@ -80,7 +85,8 @@ export async function GET(request: NextRequest) {
     });
 
     return response;
+  } catch (error) {
+    console.error('Error during Discord OAuth callback:', error);
+    return NextResponse.redirect(new URL('/?error=InternalError', request.url));
   }
-
-  return NextResponse.redirect(new URL('/?error=TokenExchangeFailed', request.url));
 }

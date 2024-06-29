@@ -1,48 +1,13 @@
-import { UnstyledButton, Group, Avatar, Text, rem, Menu, Divider, Collapse } from '@mantine/core';
-import { IconChevronRight } from '@tabler/icons-react';
+import { UnstyledButton, Group, Avatar, Text, Menu, Divider, Center } from '@mantine/core';
 import { User } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import classes from './UserButton.module.css';
-import { getCurrentUser } from '@/src/app/services/user';
-
-// FIXME: Fix popup menu not appearing for any other than the success case (user is loaded)
-
-function UserCard({ user }: { user: User | null }) {
-  return (
-    <>
-      <Avatar src={user?.discord_avatar_url} radius="xl" />
-      <div className="usercard">
-        <Text size="sm" fw={500}>
-          {user?.discord_username || 'Loading...'}
-        </Text>
-        <Text c="dimmed" size="xs">
-          {user?.discord_id || ''}
-        </Text>
-      </div>
-    </>
-  );
-}
-
-function ErrorCard({ message }: { message: string }) {
-  return (
-    <>
-      <Avatar radius="xl" />
-      <Text size="sm" fw={500}>
-        Error loading user
-      </Text>
-      <Text c="red" size="xs">
-        {message}
-      </Text>
-    </>
-  );
-}
+import { getCurrentUser } from '@/src/services/user';
+import { logout } from '@/src/services/auth';
 
 export function UserButton() {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>();
-  const [menuOpened, setMenuOpened] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,7 +17,8 @@ export function UserButton() {
           setUser(currentUser);
         }
       } catch (e: any) {
-        setError(e.message);
+        // eslint-disable-next-line no-console
+        console.error(e.message);
       } finally {
         setLoading(false);
       }
@@ -61,73 +27,59 @@ export function UserButton() {
     fetchData();
   }, []);
 
-  const userCardClick = () => {
-    setMenuOpened(!menuOpened);
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (e: any) {
+      console.error(e.message);
+    }
   };
 
-  function Chevron() {
+  if (loading || !user) {
     return (
-      <>
-        <IconChevronRight
-          className={classes.chevron}
-          style={{
-            width: rem(10),
-            height: rem(10),
-            transform: menuOpened ? 'rotate(-90deg)' : 'rotate(0)',
-          }}
-          stroke={1.5}
-        />
-      </>
-    );
-  }
-
-  function PopupMenu() {
-    return (
-      <Collapse in={menuOpened} transitionDuration={200}>
-        <Menu position="top">
-          <Menu.Item className={classes.menu} component={Link} href="/settings">
-            Settings
-          </Menu.Item>
-          <Divider />
-          <Menu.Item className={classes.menu} color="red" component={Link} href="/api/auth/logout">
-            Logout
-          </Menu.Item>
-        </Menu>
-      </Collapse>
-    );
-  }
-
-  if (loading) {
-    return (
-      <UnstyledButton className={classes.user}>
+      <Center component={UnstyledButton} w="100%" h="8vh" p={10}>
         <Group>
-          <UserCard user={null} />
-          <Chevron />
+          <Avatar radius="xl" />
+          <Text size="sm" fw={500}>
+            Loading...
+          </Text>
         </Group>
-      </UnstyledButton>
-    );
-  }
-
-  if (error) {
-    return (
-      <UnstyledButton className={classes.user}>
-        <Group>
-          <ErrorCard message="Please logout and login" />
-          <Chevron />
-        </Group>
-      </UnstyledButton>
+      </Center>
     );
   }
 
   return (
-    <>
-      <PopupMenu />
-      <UnstyledButton className={classes.user} onClick={userCardClick}>
-        <Group justify="space-between">
-          <UserCard user={user as User} />
-          <Chevron />
-        </Group>
-      </UnstyledButton>
-    </>
+    <Menu position="top" offset={30} width="target">
+      <Center component={UnstyledButton} w="100%" h="8vh">
+        <Menu.Target>
+          <Group>
+            <Avatar src={user.discord_avatar_url} radius="xl" />
+            <div>
+              <Text size="sm" fw={500}>
+                {user.discord_username}
+              </Text>
+              <Text c="dimmed" size="xs">
+                {user.discord_id}
+              </Text>
+            </div>
+          </Group>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Label>User Settings</Menu.Label>
+
+          <Menu.Item component={Link} href="/settings">
+            Settings
+          </Menu.Item>
+
+          <Divider />
+          <Menu.Label>Danger Zone</Menu.Label>
+
+          <Menu.Item color="red" onClick={handleLogout}>
+            Logout
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Center>
+    </Menu>
   );
 }

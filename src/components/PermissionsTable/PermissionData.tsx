@@ -6,7 +6,7 @@ import { IconPencil, IconSend, IconTrash, IconX, IconZoom } from '@tabler/icons-
 import { ActionType, UserData } from '@/lib/types';
 import { ExamModal } from '../ExamModal/ExamModal';
 import { ExamForm } from '../ExamForm/ExamForm';
-import { getPrerequisites } from '@/src/app/services/permissions';
+import { getPrerequisites } from '@/src/services/permissions';
 
 const statusColors: Record<string, string> = {
   PASSED: 'green',

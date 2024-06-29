@@ -3,8 +3,8 @@
 import { Accordion, Badge, Container, Group, Pagination, Title } from '@mantine/core';
 import { Application, Permission, User } from '@prisma/client';
 import { useEffect, useState } from 'react';
-import { getPermissionsData } from '@/src/app/services/permissions';
-import { getPendingApplications } from '@/src/app/services/applications';
+import { getPermissionsData } from '@/src/services/permissions';
+import { getPendingApplications } from '@/src/services/applications';
 import { ViewExam } from '@/src/components/ViewExam/ViewExam';
 
 type AppState = {

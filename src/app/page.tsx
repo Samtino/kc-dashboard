@@ -1,24 +1,11 @@
-'use client';
-
-import {
-  Image,
-  Container,
-  Title,
-  Button,
-  Group,
-  Text,
-  List,
-  ThemeIcon,
-  rem,
-  Alert,
-} from '@mantine/core';
-import { IconCheck, IconBrandGithub, IconBrandDiscord } from '@tabler/icons-react';
+import { Image, Container, Title, Group, Text, Alert } from '@mantine/core';
 import logo from '@/src/public/icon.png';
 import classes from './Landing.module.css';
 import { ColorSchemeToggle } from '@/src/components/ColorSchemeToggle/ColorSchemeToggle';
-import { login } from './services/auth';
+import { FeaturesList } from './LandingComponents';
+import { DiscordLoginButton, GithubIssuesButton } from '../components/Buttons/Buttons';
 
-export default function Landing() {
+export default async function Landing() {
   return (
     <Container size="md">
       <div className={classes.inner}>
@@ -45,53 +32,19 @@ export default function Landing() {
             </Text>
           </Alert>
 
-          <List
-            mt={30}
-            spacing="sm"
-            size="sm"
-            icon={
-              <ThemeIcon size={20} radius="xl">
-                <IconCheck style={{ width: rem(12), height: rem(12) }} stroke={1.5} />
-              </ThemeIcon>
-            }
-          >
-            <h3>You can: </h3>
-            <List.Item>View your current permissions</List.Item>
-            <List.Item>Apply for new permissions</List.Item>
-            <List.Item>View the status of your permission applications</List.Item>
-          </List>
+          <FeaturesList />
 
           <Group mt={30}>
-            <Button
-              leftSection={<IconBrandDiscord />}
-              radius="xl"
-              size="md"
-              className={classes.control}
-              color="#7289DA"
-              onClick={() => {
-                login();
-              }}
-            >
-              Sign in with Discord
-            </Button>
+            <DiscordLoginButton />
             <ColorSchemeToggle />
           </Group>
+
+          <br />
+
+          <GithubIssuesButton />
         </div>
         <Image src={logo.src} className={classes.image} />
       </div>
-
-      <Button
-        component="a"
-        target="_blank"
-        href="https://github.com/Samtino/kc-dashboard/issues"
-        leftSection={<IconBrandGithub />}
-        radius="xl"
-        size="md"
-        className={classes.control}
-        color="#2b3137"
-      >
-        Report an issue on GitHub
-      </Button>
     </Container>
   );
 }

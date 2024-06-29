@@ -4,7 +4,9 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function login(): Promise<void> {
-  if (await cookies().has('user')) {
+  const userCookie = cookies().get('user');
+
+  if (userCookie) {
     return redirect('/dashboard');
   }
 
@@ -15,4 +17,16 @@ export async function login(): Promise<void> {
   const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scopes.join('+')}`;
 
   return redirect(discordAuthUrl);
+}
+
+export async function logout(): Promise<void> {
+  const userCookie = cookies().get('user');
+
+  if (!userCookie) {
+    return redirect('/');
+  }
+
+  cookies().delete('user');
+
+  return redirect('/');
 }

@@ -1,11 +1,12 @@
 'use client';
 
+// TODO: make this a server component
+
 import { useState } from 'react';
 import { Code, Container, Notification } from '@mantine/core';
 import { PermissionsTable } from '@/src/components/PermissionsTable/PermissionsTable';
 import classes from './Permissions.module.css';
 
-// TODO: Add real data from the DB
 export default function PermissionsPage() {
   const [bannerOpened, setBannerOpened] = useState(false);
 

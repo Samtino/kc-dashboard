@@ -2,8 +2,8 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { Button, Container, Fieldset, Group, Image, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Question, User } from '@prisma/client';
-import { getQuestions } from '@/src/app/services/permissions';
-import { createNewApplication } from '@/src/app/services/applications';
+import { getQuestions } from '@/src/services/permissions';
+import { createNewApplication } from '@/src/services/applications';
 import { ActionType, MultipleChoiceQuestion, QuestionProps } from '@/lib/types';
 
 function MultipleChoice({ question, selectedValue, onSelect }: QuestionProps) {

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Avatar, Badge, Button, Fieldset, Group, Loader, Stack } from '@mantine/core';
 import type { Application, Question, User } from '@prisma/client';
 import Link from 'next/link';
-import { getUserById } from '@/src/app/services/user';
-import { getQuestions } from '@/src/app/services/permissions';
+import { getUserById } from '@/src/services/user';
+import { getQuestions } from '@/src/services/permissions';
 import { MultipleChoiceQuestion } from '@/lib/types';
 
 export function ViewExam({ app }: { app: Application }) {
