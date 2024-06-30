@@ -24,6 +24,16 @@ export type PermissionData = {
   prerequisitesFor: Permission[];
 };
 
+export type ApplicationData = {
+  id: Application['id'];
+  application: Application;
+  user: User;
+  permission: Permission;
+  answers: string[];
+  status: Application['status'];
+  processed_by?: User | null; // Updated to allow null
+};
+
 type ActionType = 'view' | 'edit' | 'send' | 'delete' | 'denied' | 'prereqs';
 
 // Application question data types

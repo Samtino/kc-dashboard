@@ -31,6 +31,7 @@ export function UserButton() {
     try {
       await logout();
     } catch (e: any) {
+      // eslint-disable-next-line no-console
       console.error(e.message);
     }
   };

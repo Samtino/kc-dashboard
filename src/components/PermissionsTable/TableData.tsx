@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 import { ActionIcon, Badge, Center, Group, rem, Table, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Application, Permission, Strike } from '@prisma/client';
 import { IconPencil, IconSend, IconTrash, IconX, IconZoom } from '@tabler/icons-react';
-import { ActionType, UserData } from '@/lib/types';
+import { ActionType, PermissionData, UserData } from '@/lib/types';
 import { ExamModal } from '../ExamModal/ExamModal';
 import { ExamForm } from '../ExamForm/ExamForm';
-import { getPrerequisites } from '@/src/services/permissions';
+// import { getPrerequisites } from '@/src/services/permissions';
 
 const statusColors: Record<string, string> = {
   PASSED: 'green',
@@ -16,22 +16,33 @@ const statusColors: Record<string, string> = {
   NONE: 'gray',
 };
 
-export function PermissionData({ perm, userData }: { perm: Permission; userData: UserData }) {
+export function TableData({
+  permData,
+  userData,
+}: {
+  permData: PermissionData;
+  userData: UserData;
+}) {
+  // const userApp = userData.applications.find((app) => app.permission_id === perm.id);
+  // const status = userApp?.status ?? 'NONE';
+  // const strikes = userData.strikes.filter((strike) => strike.permission_id === perm.id);
+  // const [prereqs, setPrereqs] = useState<Permission[]>([]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const prerequisites = await getPrerequisites(perm.id);
+  //     if (prerequisites) {
+  //       setPrereqs(prerequisites);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [perm.id]);
+
+  const perm = permData.permission;
   const userApp = userData.applications.find((app) => app.permission_id === perm.id);
   const status = userApp?.status ?? 'NONE';
   const strikes = userData.strikes.filter((strike) => strike.permission_id === perm.id);
-  const [prereqs, setPrereqs] = useState<Permission[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const prerequisites = await getPrerequisites(perm.id);
-      if (prerequisites) {
-        setPrereqs(prerequisites);
-      }
-    };
-
-    fetchData();
-  }, [perm.id]);
 
   return (
     <Table.Tr>
@@ -49,7 +60,7 @@ export function PermissionData({ perm, userData }: { perm: Permission; userData:
       <Table.Td>
         <Center>
           <Group justify="center">
-            <GetPrereqs prereqs={prereqs} userData={userData} />
+            <GetPrereqs prereqs={permData.prerequisites} userData={userData} />
           </Group>
         </Center>
       </Table.Td>
@@ -65,7 +76,7 @@ export function PermissionData({ perm, userData }: { perm: Permission; userData:
             perm={perm}
             userCooldown={userApp?.next_apply_date}
             userData={userData}
-            prereqs={prereqs}
+            prereqs={permData.prerequisites}
           />
         </Group>
       </Table.Td>
@@ -182,7 +193,7 @@ function GetActionIcon({
             actionType={actionType}
             perm={perm}
             disabled={action.disabled}
-            userData={userData.user}
+            userData={userData}
           />
         );
       })}

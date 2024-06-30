@@ -1,51 +1,60 @@
 import { useEffect, useState } from 'react';
 import { Avatar, Badge, Button, Fieldset, Group, Loader, Stack } from '@mantine/core';
-import type { Application, Question, User } from '@prisma/client';
 import Link from 'next/link';
-import { getUserById } from '@/src/services/user';
-import { getQuestions } from '@/src/services/permissions';
-import { MultipleChoiceQuestion } from '@/lib/types';
+// import { getUserById } from '@/src/services/user';
+// import { getQuestions } from '@/src/services/permissions';
+import { ApplicationData, MultipleChoiceQuestion, PermissionData, UserData } from '@/lib/types';
+import { getUserData } from '@/src/services/user';
+import { getPermissionData } from '@/src/services/permissions';
 
-export function ViewExam({ app }: { app: Application }) {
-  const [user, setUser] = useState<User>();
-  const [permission, setPermission] = useState<Question[]>();
+export function ViewExam({ app }: { app: ApplicationData }) {
+  // const [user, setUser] = useState<User>();
+  // const [permission, setPermission] = useState<Question[]>();
+  const [userData, setUserData] = useState<UserData>();
+  const [permission, setPermission] = useState<PermissionData>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const userData = await getUserById(app.user_id);
-      if (!userData) {
-        throw new Error('User not found');
-      }
+      // const userData = await getUserById(app.user_id);
+      // if (!userData) {
+      //   throw new Error('User not found');
+      // }
+      // const permissionData = await getQuestions(app.permission_id);
+      // if (!permissionData) {
+      //   throw new Error('Permission not found');
+      // }
+      // setUser(userData);
+      // setPermission(permissionData);
+      // const userData = getUserData(app.user_id);
+      const permissionData = await getPermissionData();
+      const currentPermissions = permissionData.find(
+        (perm) => perm.permission.id === app.permission.id
+      );
 
-      const permissionData = await getQuestions(app.permission_id);
-      if (!permissionData) {
-        throw new Error('Permission not found');
-      }
-
-      setUser(userData);
-      setPermission(permissionData);
+      setUserData(await getUserData(app.user.discord_id));
+      setPermission(currentPermissions);
     };
 
     fetchData().then(() => setLoading(false));
-  }, [app.user_id]);
+  }, [userData, permission]);
 
   if (loading) {
     return <Loader />;
   }
 
   const daysSinceSubmit = Math.floor(
-    (new Date().getTime() - new Date(app.created_at).getTime()) / (1000 * 60 * 60 * 24)
+    (new Date().getTime() - new Date(app.application.created_at).getTime()) / (1000 * 60 * 60 * 24)
   );
 
   return (
     <>
-      <Fieldset m={20} legend={user?.discord_username}>
+      <Fieldset m={20} legend={userData?.user.discord_username}>
         <Group justify="space-between">
           <Group wrap="wrap">
-            <Avatar src={user?.discord_avatar_url} alt={user?.discord_username} />
-            <p>SteamID: {user?.steam_id}</p>
-            <p>BMID: {user?.bmid}</p>
+            <Avatar src={userData?.user.discord_avatar_url} alt={userData?.user.discord_username} />
+            <p>SteamID: {userData?.user.steam_id}</p>
+            <p>BMID: {userData?.user.bmid}</p>
           </Group>
           <Badge color={daysSinceSubmit > 14 ? 'red' : 'green'}>
             Days since submitted: {daysSinceSubmit}
@@ -53,7 +62,7 @@ export function ViewExam({ app }: { app: Application }) {
         </Group>
         <p>Answers:</p>
         <Stack>
-          {permission?.map((question) => {
+          {permission?.questions.map((question) => {
             let isCorrect;
             let answer;
             if (question.type === 'MULTIPLE_CHOICE' || question.type === 'TRUE_FALSE') {
@@ -84,14 +93,14 @@ export function ViewExam({ app }: { app: Application }) {
         <Group align="end">
           <Button
             component={Link}
-            href={`https://www.battlemetrics.com/rcon/players/${user?.bmid}`}
+            href={`https://www.battlemetrics.com/rcon/players/${userData?.user.bmid}`}
             target="_blank"
           >
             Open BM Account
           </Button>
           <Button
             component={Link}
-            href={`https://steamcommunity.com/profiles/${user?.steam_id}`}
+            href={`https://steamcommunity.com/profiles/${userData?.user.steam_id}`}
             target="_blank"
           >
             Open Steam Account

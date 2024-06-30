@@ -10,11 +10,11 @@ export default async function PermissionsPage() {
   TODO: Optimize the PermissionsTable for performance (faster rendering, less data fetching, etc.)
   */
 
-  const assetExams = {
-    status: false,
-    endDate: new Date('2024-06-20'),
-    color: 'red',
-  };
+  // const assetExams = {
+  //   status: false,
+  //   endDate: new Date('2024-06-20'),
+  //   color: 'red',
+  // };
 
   return (
     <div>
@@ -27,7 +27,7 @@ export default async function PermissionsPage() {
 
       <br />
 
-      {/* <PermissionsTable /> */}
+      <PermissionsTable />
     </div>
   );
 }

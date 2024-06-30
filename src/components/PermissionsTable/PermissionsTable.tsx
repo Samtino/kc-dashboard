@@ -1,24 +1,25 @@
+'use client';
+
 // TODO: parallelize the fetching of user data and permissions data
 
 import { Center, Loader, Paper, Table } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { Permission, User } from '@prisma/client';
+// import { Permission } from '@prisma/client';
 import { getCurrentUser } from '@/src/services/user';
-import {
-  getPermissionsData,
-  getUserApplications,
-  getUserPermissions,
-  getUserStrikes,
-} from '@/src/services/permissions';
-import { UserData } from '@/lib/types';
-import { PermissionData } from './PermissionData';
+// import {
+//   getPermissionsData,
+//   getUserApplications,
+//   getUserPermissions,
+//   getUserStrikes,
+// } from '@/src/services/permissions';
+import { PermissionData, UserData } from '@/lib/types';
+import { TableData } from './TableData';
+import { getPermissionData } from '@/src/services/permissions';
 
 export function PermissionsTable() {
-  const [user, setUser] = useState<User>();
-  const [loading, setLoading] = useState(true);
-  const [standardPerms, setStandardPerms] = useState<Permission[]>();
-  const [assetPerms, setAssetPerms] = useState<Permission[]>();
   const [userData, setUserData] = useState<UserData>();
+  const [loading, setLoading] = useState(true);
+  const [permissionsData, setPermissionsData] = useState<PermissionData[]>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,9 +30,8 @@ export function PermissionsTable() {
           throw new Error('User not found');
         }
 
-        setUser(currentUser);
-        setStandardPerms(await getPermissionsData('standard'));
-        setAssetPerms(await getPermissionsData('asset_exam'));
+        setUserData(currentUser);
+        setPermissionsData(await getPermissionData());
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e);
@@ -41,23 +41,10 @@ export function PermissionsTable() {
     };
 
     fetchData();
-  }, []);
+  }, [userData, permissionsData]);
 
-  useEffect(() => {
-    const fetchUserPerms = async () => {
-      if (user) {
-        const [perms, applications, strikes] = await Promise.all([
-          getUserPermissions(user.id),
-          getUserApplications(user.id),
-          getUserStrikes(user.id),
-        ]);
-
-        setUserData({ id: user.id, user, userPerms: perms, applications, strikes });
-      }
-    };
-
-    fetchUserPerms();
-  }, [user]);
+  const standardPerms = permissionsData?.filter((perm) => perm.permission.asset_exam === false);
+  const assetPerms = permissionsData?.filter((perm) => perm.permission.asset_exam === true);
 
   if (loading) {
     return (
@@ -89,7 +76,7 @@ function CreateTable({
   userData,
 }: {
   permsType: string;
-  permsData: Permission[];
+  permsData: PermissionData[];
   userData: UserData;
 }) {
   return (
@@ -111,7 +98,7 @@ function CreateTable({
           </Table.Thead>
           <Table.Tbody>
             {permsData.map((perm) => (
-              <PermissionData key={perm.id} perm={perm} userData={userData} />
+              <TableData key={perm.id} permData={perm} userData={userData} />
             ))}
           </Table.Tbody>
         </Table>

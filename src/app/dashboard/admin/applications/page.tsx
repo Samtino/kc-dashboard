@@ -1,11 +1,11 @@
 'use client';
 
 import { Accordion, Badge, Container, Group, Pagination, Title } from '@mantine/core';
-import { Application, Permission, User } from '@prisma/client';
 import { useEffect, useState } from 'react';
-import { getPermissionsData } from '@/src/services/permissions';
 import { getPendingApplications } from '@/src/services/applications';
 import { ViewExam } from '@/src/components/ViewExam/ViewExam';
+import { getPermissionData } from '@/src/services/permissions';
+import { ApplicationData, PermissionData } from '@/lib/types';
 
 type AppState = {
   [key: string]: {
@@ -15,28 +15,24 @@ type AppState = {
 };
 
 export default function AdminApplicationsPage() {
-  const [standardPermissions, setStandardPermissions] = useState<Permission[]>([]);
-  const [assetPermissions, setAssetPermissions] = useState<Permission[]>([]);
-  const [applications, setApplications] = useState<Application[]>([]);
+  const [permissions, setPermissions] = useState<PermissionData[]>([]);
+  const [applications, setApplications] = useState<ApplicationData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [appState, setAppState] = useState<AppState>({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedStandardPermissions = await getPermissionsData('standard');
-        const fetchedAssetPermissions = await getPermissionsData('asset_exam');
+        const fetchedPermissions = await getPermissionData();
         const fetchedApplications = await getPendingApplications();
 
-        setStandardPermissions(fetchedStandardPermissions);
-        setAssetPermissions(fetchedAssetPermissions);
+        setPermissions(fetchedPermissions);
         setApplications(fetchedApplications);
 
         // Initialize state for each permission with its applications count
         const initialState: AppState = {};
-        const allPermissions = [...fetchedStandardPermissions, ...fetchedAssetPermissions];
-        allPermissions.forEach((perm) => {
-          const permApps = fetchedApplications.filter((app) => app.permission_id === perm.id);
+        fetchedPermissions.forEach((perm) => {
+          const permApps = fetchedApplications.filter((app) => app.id === perm.id);
           initialState[perm.id] = { activePage: 1, total: permApps.length };
         });
         setAppState(initialState);
@@ -48,14 +44,11 @@ export default function AdminApplicationsPage() {
     };
 
     fetchData();
-  }, []);
+  }, [applications, permissions]);
 
   if (loading) {
     return <Title order={1}>Loading...</Title>;
   }
-
-  const permissions = [...standardPermissions, ...assetPermissions];
-
   const handlePageChange = (permId: string, page: number) => {
     setAppState((prevState) => ({
       ...prevState,
@@ -66,23 +59,24 @@ export default function AdminApplicationsPage() {
     }));
   };
 
-  const passButton = (app: Application, reviewer: User) => {
-    // Mark the application as passed by the reviewer
-  };
+  // TODO: Implement pass and fail buttons
+  // const passButton = (app: Application, reviewer: User) => {
+  //   // Mark the application as passed by the reviewer
+  // };
 
   return (
     <Container p={20} m={20} size="100%">
       <Accordion variant="contained" chevronPosition="left">
         {permissions.map((perm) => {
-          const apps = applications.filter((app) => app.permission_id === perm.id);
+          const apps = applications.filter((app) => app.id === perm.id);
           const { activePage, total } = appState[perm.id] || { activePage: 1, total: 0 };
           const activeApp = apps[activePage - 1];
 
           return (
-            <Accordion.Item key={perm.id} value={perm.name}>
+            <Accordion.Item key={perm.id} value={perm.permission.name}>
               <Accordion.Control disabled={apps.length === 0}>
                 <Group wrap="nowrap" justify="space-between">
-                  {perm.name} Applications
+                  {perm.permission.name} Applications
                   <Group>
                     <p>Pending Applications: </p>
                     <Badge color="blue">{apps.length}</Badge>

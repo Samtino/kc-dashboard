@@ -1,10 +1,11 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { Button, Container, Fieldset, Group, Image, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { Question, User } from '@prisma/client';
-import { getQuestions } from '@/src/services/permissions';
-import { createNewApplication } from '@/src/services/applications';
+import { Permission, Question, User } from '@prisma/client';
+// import { createNewApplication } from '@/src/services/applications';
 import { ActionType, MultipleChoiceQuestion, QuestionProps } from '@/lib/types';
+import { getPermissionData } from '@/src/services/permissions';
+import { createNewApplication } from '@/src/services/applications';
 
 function MultipleChoice({ question, selectedValue, onSelect }: QuestionProps) {
   return (
@@ -48,7 +49,7 @@ export function ExamForm({
   type,
   user_id,
 }: {
-  permId: string;
+  permId: Permission['id'];
   type: ActionType;
   user_id: User['id'];
 }) {
@@ -57,7 +58,12 @@ export function ExamForm({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setQuestions(await getQuestions(permId));
+        // setQuestions(await getQuestions(permId));
+        const permissions = await getPermissionData();
+        const permission = permissions.find((p) => p.id === permId);
+        if (permission) {
+          setQuestions(permission.questions);
+        }
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e);
@@ -121,12 +127,10 @@ export function ExamForm({
   return (
     <Container>
       <form
-        onSubmit={form.onSubmit(
-          (values) =>
-            createNewApplication(user_id, permId, Object.values(values)).then(() => {
-              window.location.reload();
-            })
-          // console.log('createNewApplication', user_id, permId, Object.values(values))
+        onSubmit={form.onSubmit((values) =>
+          createNewApplication(user_id, permId, Object.values(values)).then(() => {
+            window.location.reload();
+          })
         )}
       >
         {questions.map((question) => {
