@@ -9,8 +9,10 @@ import { User } from '@prisma/client';
 import { ColorSchemeToggle, LinksGroup, UserButton } from '@/src/components';
 import classes from './Dashboard.module.css';
 import icon from '@/src/public/icon.png';
-import { getCurrentUser } from '@/src/services/user';
+// import { getCurrentUser } from '@/src/services/user';
 import { LinksGroupProps } from '@/src/components/NavbarLinksGroup/NavbarLinksGroup';
+import { getCurrentUser } from '@/src/services/user';
+import { UserData } from '@/lib/types';
 
 const mockdata: LinksGroupProps[] = [
   { label: 'Dashboard', icon: IconLayoutBoard, link: '/dashboard' },
@@ -71,7 +73,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       try {
         const currentUser = await getCurrentUser();
         if (currentUser) {
-          setUser(currentUser);
+          setUser(currentUser.user);
         }
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -82,7 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
   if (loading) {
     return (
@@ -93,7 +95,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   if (!user) {
-    return <div>Error loading user data</div>; // Handle error state as needed
+    return (
+      <Center style={{ height: '100vh' }}>
+        <h1>Unauthorized</h1>
+      </Center>
+    );
   }
 
   const allowedSections = mockdata.filter((section) => {

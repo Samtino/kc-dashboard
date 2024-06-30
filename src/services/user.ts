@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { User } from '@prisma/client';
 import { UserData } from '@/lib/types';
 import prisma from '@/lib/prisma';
-import { encrypt } from './encryption';
+import { decrypt, encrypt } from './encryption';
 
 export const getUserData = async (discord_id: User['discord_id']): Promise<UserData> => {
   const userData = await prisma.user.findUnique({
@@ -27,6 +27,18 @@ export const getUserData = async (discord_id: User['discord_id']): Promise<UserD
     applications: userData.applications,
     strikes: userData.strikes,
   };
+};
+
+export const getCurrentUser = async (): Promise<UserData> => {
+  const cookie = cookies().get('user');
+
+  if (!cookie) {
+    throw new Error('User not found');
+  }
+
+  const userData = await decrypt(cookie.value);
+
+  return userData;
 };
 
 export const createUserCookie = async (user: UserData) => {

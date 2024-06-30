@@ -6,7 +6,7 @@ import { getCurrentUser } from '@/src/services/user';
 import { logout } from '@/src/services/auth';
 
 export function UserButton() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export function UserButton() {
       try {
         const currentUser = await getCurrentUser();
         if (currentUser) {
-          setUser(currentUser);
+          setUser(currentUser.user);
         }
       } catch (e: any) {
         // eslint-disable-next-line no-console
