@@ -8,58 +8,50 @@ export async function middleware(request: NextRequest) {
   const user = userData?.user;
   const path = request.nextUrl.pathname;
 
-  // Redirect to /dashboard if the user is authenticated and is on the root path
+  const baseUrl = request.nextUrl.origin; // Construct base URL
+
   if (path === '/') {
     if (user) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL('/dashboard', baseUrl));
     }
 
-    // Allow access to the root path if the user is not authenticated
-
     return NextResponse.next();
   }
 
-  // Redirect to the root path if the user is not authenticated and is trying to access a protected route
-  if (!user && path !== '/') {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  // Sys-admins can bypass all checks
-  if (user && user.roles.includes('SYS_ADMIN')) {
+  if (!user && !path.startsWith('/')) {
     return NextResponse.next();
   }
 
-  // Allow access to /dashboard for authenticated users
-  if (user && path.startsWith('/dashboard')) {
+  if (!user) {
+    return NextResponse.redirect(new URL('/', baseUrl));
+  }
+
+  if (user.roles.includes('SYS_ADMIN')) {
+    // FIXME: this doesn't work
     return NextResponse.next();
   }
 
-  // Allow access to specific roles for specific paths
-  if (user && user.roles.includes('KOG') && path.startsWith('/dashboard/kog')) {
-    return NextResponse.next();
+  if (path.startsWith('/dashboard')) {
+    if (user.roles.includes('KOG') && path.startsWith('/dashboard/kog')) {
+      return NextResponse.next();
+    }
+    if (user.roles.includes('KT') && path.startsWith('/dashboard/kt')) {
+      return NextResponse.next();
+    }
+    if (user.roles.includes('ADMIN') || user.roles.includes('COMMUNITY_STAFF')) {
+      if (path.startsWith('/dashboard/admin/manage') && user.roles.includes('COMMUNITY_STAFF')) {
+        return NextResponse.next();
+      }
+      if (path.startsWith('/dashboard/admin')) {
+        return NextResponse.next();
+      }
+    } else if (path === '/dashboard') {
+      return NextResponse.next();
+    } else {
+      return NextResponse.json({ error: 'No access' }, { status: 403 });
+    }
   }
 
-  if (user && user.roles.includes('KT') && path.startsWith('/dashboard/kt')) {
-    return NextResponse.next();
-  }
-
-  if (
-    user &&
-    (user.roles.includes('ADMIN') || user.roles.includes('COMMUNITY_STAFF')) &&
-    path.startsWith('/dashboard/admin')
-  ) {
-    return NextResponse.next();
-  }
-
-  if (
-    user &&
-    user.roles.includes('COMMUNITY_STAFF') &&
-    path.startsWith('/dashboard/admin/manage')
-  ) {
-    return NextResponse.next();
-  }
-
-  // If none of the above conditions are met, allow the request to proceed
   return NextResponse.next();
 }
 
