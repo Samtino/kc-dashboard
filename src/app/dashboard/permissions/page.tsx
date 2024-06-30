@@ -4,7 +4,12 @@ import { PermissionsTable } from '@/src/components/PermissionsTable/PermissionsT
 import AssetCycleNotification from './AssetCycleNotif';
 
 export default async function PermissionsPage() {
-  // TODO: move this to the PermissionsTable and display over the table as a banner
+  /*
+  TODO: Move the asset exams banner either to a header or a separate component
+  TODO: Re-implement the PermissionsTable component as server-side rendered content
+  TODO: Optimize the PermissionsTable for performance (faster rendering, less data fetching, etc.)
+  */
+
   const assetExams = {
     status: false,
     endDate: new Date('2024-06-20'),
@@ -22,7 +27,7 @@ export default async function PermissionsPage() {
 
       <br />
 
-      <PermissionsTable />
+      {/* <PermissionsTable /> */}
     </div>
   );
 }

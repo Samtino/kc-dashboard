@@ -11,7 +11,6 @@ import type {
 export type UserData = {
   id: User['id'];
   user: User;
-  roles: User['roles'];
   permissions: UserPermission[];
   applications: Application[];
   strikes: Strike[];
