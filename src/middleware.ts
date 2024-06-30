@@ -1,11 +1,10 @@
-// /* eslint-disable consistent-return */
 import { NextRequest, NextResponse } from 'next/server';
+import { User } from '@prisma/client';
 import { decrypt } from './services/encryption';
-import { UserData } from '@/lib/types';
 
 export async function middleware(request: NextRequest) {
-  const cookie = await request.cookies.get('user');
-  const { user }: UserData = cookie ? await decrypt(cookie.value) : undefined;
+  const cookie = request.cookies.get('user');
+  const { user }: { user: User | undefined } = cookie ? await decrypt(cookie.value) : undefined;
   const path = request.nextUrl.pathname;
 
   if (path === '/') {
@@ -36,7 +35,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (user.roles.includes('ADMIN' || 'COMMUNITY_STAFF') && path.startsWith('/dashboard/admin')) {
+  if (
+    user.roles.includes('ADMIN') ||
+    (user.roles.includes('COMMUNITY_STAFF') && path.startsWith('/dashboard/admin'))
+  ) {
     return NextResponse.next();
   }
 
