@@ -1,32 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Avatar, Badge, Button, Fieldset, Group, Loader, Stack } from '@mantine/core';
 import Link from 'next/link';
-// import { getUserById } from '@/src/services/user';
-// import { getQuestions } from '@/src/services/permissions';
 import { ApplicationData, MultipleChoiceQuestion, PermissionData, UserData } from '@/lib/types';
 import { getUserData } from '@/src/services/user';
 import { getPermissionData } from '@/src/services/permissions';
 
 export function ViewExam({ app }: { app: ApplicationData }) {
-  // const [user, setUser] = useState<User>();
-  // const [permission, setPermission] = useState<Question[]>();
   const [userData, setUserData] = useState<UserData>();
   const [permission, setPermission] = useState<PermissionData>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      // const userData = await getUserById(app.user_id);
-      // if (!userData) {
-      //   throw new Error('User not found');
-      // }
-      // const permissionData = await getQuestions(app.permission_id);
-      // if (!permissionData) {
-      //   throw new Error('Permission not found');
-      // }
-      // setUser(userData);
-      // setPermission(permissionData);
-      // const userData = getUserData(app.user_id);
       const permissionData = await getPermissionData();
       const currentPermissions = permissionData.find(
         (perm) => perm.permission.id === app.permission.id
