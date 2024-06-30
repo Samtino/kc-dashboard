@@ -7,9 +7,8 @@ export async function encrypt(payload: JWTPayload) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime(3600) // 1 hour
-    .sign(encryptionKey)
-    .catch();
+    .setExpirationTime('1h')
+    .sign(encryptionKey);
 }
 
 export async function decrypt(input: string): Promise<any> {
