@@ -6,9 +6,9 @@ import { UserData } from '@/lib/types';
 import prisma from '@/lib/prisma';
 import { encrypt } from './encryption';
 
-export const getUserData = async (userId: User['id']): Promise<UserData> => {
+export const getUserData = async (discord_id: User['discord_id']): Promise<UserData> => {
   const userData = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { discord_id },
     include: {
       permissions: true,
       applications: true,
