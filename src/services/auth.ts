@@ -80,9 +80,10 @@ export const discordCallback = async (code: string) => {
     discord_avatar_url: `https://cdn.discordapp.com/avatars/${userResponseData.id}/${userResponseData.avatar}.png`,
   };
 
-  let user = await getUserData(userResponseData.id);
-
-  if (!user) {
+  let user;
+  try {
+    user = await getUserData(userResponseData.id);
+  } catch (error) {
     user = await createUser(responseData);
   }
 
