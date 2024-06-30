@@ -60,7 +60,7 @@ export const createUser = async ({
 }: {
   discord_id: User['discord_id'];
   discord_username: User['discord_username'];
-  discord_avatar_url: User['discord_avatar_url'];
+  discord_avatar_url?: User['discord_avatar_url'];
 }): Promise<UserData> => {
   const userData = await prisma.user.create({
     data: {

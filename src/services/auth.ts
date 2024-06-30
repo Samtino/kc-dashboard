@@ -2,7 +2,29 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import type { User } from '@prisma/client';
 import { createUser, createUserCookie, getUserData, updateUser } from './user';
+
+type tokenData = {
+  token_type: string;
+  access_token: string;
+  expires_in: number;
+  refresh_token: string;
+  scope: string;
+};
+
+type guildData = {
+  avatar: string;
+  joined_at: string;
+  nick: string;
+  roles: string[];
+  user: {
+    id: string;
+    username: string;
+    avatar: string | null;
+    global_name: string | null;
+  };
+};
 
 export const login = async () => {
   const userCookie = cookies().get('user');
@@ -56,45 +78,94 @@ export const discordCallback = async (code: string) => {
     body: params.toString(),
   });
 
-  const tokenData = await tokenResponse.json();
+  const tokenData: tokenData = await tokenResponse.json();
 
   if (!tokenData.access_token) {
     return redirect('/?error=TokenExchangeFailed');
   }
 
-  const userResponse = await fetch('https://discord.com/api/users/@me', {
-    headers: {
-      Authorization: `Bearer ${tokenData.access_token}`,
-    },
-  });
+  const guildResponse = await fetch(
+    `https://discord.com/api/users/@me/guilds/${process.env.GUILD_ID}/member`,
+    {
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`,
+      },
+    }
+  );
 
-  const userResponseData = await userResponse.json();
+  const guildResponseData: guildData = await guildResponse.json();
 
-  if (!userResponseData.id) {
-    return redirect('/?error=userDataFailed');
+  if (!guildResponseData.joined_at) {
+    return redirect('/?error=notInGuild');
   }
 
-  const responseData = {
-    discord_id: userResponseData.id,
-    discord_username: userResponseData.username,
-    discord_avatar_url: `https://cdn.discordapp.com/avatars/${userResponseData.id}/${userResponseData.avatar}.png`,
+  const discordName =
+    guildResponseData.nick || guildResponseData.user.global_name || guildResponseData.user.username;
+  const discordAvatar = guildResponseData.avatar || guildResponseData.user.avatar || undefined;
+  const avatarUrl = discordAvatar
+    ? `https://cdn.discordapp.com/avatars/${guildResponseData.user.id}/${discordAvatar}.png`
+    : undefined;
+
+  const roles = await checkUserRoles(guildResponseData);
+
+  const responseData: {
+    discord_id: User['discord_id'];
+    discord_username: User['discord_username'];
+    discord_avatar_url: User['discord_avatar_url'] | undefined;
+    roles: User['roles'];
+  } = {
+    discord_id: guildResponseData.user.id,
+    discord_username: discordName,
+    discord_avatar_url: avatarUrl,
+    roles,
   };
 
   let user;
   try {
-    user = await getUserData(userResponseData.id);
+    user = await getUserData(responseData.discord_id as string);
   } catch (error) {
     user = await createUser(responseData);
   }
 
   if (
     user.user.discord_username !== responseData.discord_username ||
-    user.user.discord_avatar_url !== responseData.discord_avatar_url
+    user.user.discord_avatar_url !== responseData.discord_avatar_url ||
+    user.user.roles !== responseData.roles
   ) {
     await updateUser(user.id, responseData);
   }
 
   await createUserCookie(user);
 
-  return user;
+  return redirect('/dashboard');
+};
+
+const checkUserRoles = async (guildResponseData: guildData) => {
+  const rolesIds = guildResponseData.roles;
+  const userRoles: User['roles'] = [];
+
+  const sysAdmins = process.env.SYS_ADMIN_IDS?.split(',') ?? [];
+  if (sysAdmins.includes(guildResponseData.user.id)) {
+    userRoles.push('SYS_ADMIN');
+  }
+
+  rolesIds.forEach((roleId) => {
+    switch (roleId) {
+      case process.env.CS_ROLE_ID:
+        userRoles.push('COMMUNITY_STAFF');
+        break;
+      case process.env.ADMIN_ROLE_ID:
+        userRoles.push('ADMIN');
+        break;
+      case process.env.KOG_ROLE_ID:
+      case process.env.MPU_ROLE_ID:
+        userRoles.push('KOG');
+        break;
+      case process.env.KT_ROLE_ID:
+        userRoles.push('KT');
+        break;
+    }
+  });
+
+  return userRoles;
 };
