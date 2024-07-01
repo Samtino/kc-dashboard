@@ -23,22 +23,6 @@ export function TableData({
   permData: PermissionData;
   userData: UserData;
 }) {
-  // const userApp = userData.applications.find((app) => app.permission_id === perm.id);
-  // const status = userApp?.status ?? 'NONE';
-  // const strikes = userData.strikes.filter((strike) => strike.permission_id === perm.id);
-  // const [prereqs, setPrereqs] = useState<Permission[]>([]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const prerequisites = await getPrerequisites(perm.id);
-  //     if (prerequisites) {
-  //       setPrereqs(prerequisites);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [perm.id]);
-
   const perm = permData.permission;
   const userApp = userData.applications.find((app) => app.permission_id === perm.id);
   const status = userApp?.status ?? 'NONE';

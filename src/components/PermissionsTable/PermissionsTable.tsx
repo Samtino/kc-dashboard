@@ -1,17 +1,8 @@
 'use client';
 
-// TODO: parallelize the fetching of user data and permissions data
-
 import { Center, Loader, Paper, Table } from '@mantine/core';
 import { useEffect, useState } from 'react';
-// import { Permission } from '@prisma/client';
 import { getCurrentUser } from '@/src/services/user';
-// import {
-//   getPermissionsData,
-//   getUserApplications,
-//   getUserPermissions,
-//   getUserStrikes,
-// } from '@/src/services/permissions';
 import { PermissionData, UserData } from '@/lib/types';
 import { TableData } from './TableData';
 import { getPermissionData } from '@/src/services/permissions';
@@ -20,6 +11,7 @@ export function PermissionsTable() {
   const [userData, setUserData] = useState<UserData>();
   const [loading, setLoading] = useState(true);
   const [permissionsData, setPermissionsData] = useState<PermissionData[]>();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,18 +25,14 @@ export function PermissionsTable() {
         setUserData(currentUser);
         setPermissionsData(await getPermissionData());
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e);
+        setError((e as Error).message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [userData, permissionsData]);
-
-  const standardPerms = permissionsData?.filter((perm) => perm.permission.asset_exam === false);
-  const assetPerms = permissionsData?.filter((perm) => perm.permission.asset_exam === true);
+  }, []);
 
   if (loading) {
     return (
@@ -53,6 +41,17 @@ export function PermissionsTable() {
       </Center>
     );
   }
+
+  if (error) {
+    return (
+      <Center>
+        <h1>{error}</h1>
+      </Center>
+    );
+  }
+
+  const standardPerms = permissionsData?.filter((perm) => perm.permission.asset_exam === false);
+  const assetPerms = permissionsData?.filter((perm) => perm.permission.asset_exam === true);
 
   if (!assetPerms || !standardPerms || !userData) {
     return (

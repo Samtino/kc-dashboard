@@ -4,7 +4,7 @@ import { useForm } from '@mantine/form';
 import { Permission, Question, User } from '@prisma/client';
 // import { createNewApplication } from '@/src/services/applications';
 import { ActionType, MultipleChoiceQuestion, QuestionProps } from '@/lib/types';
-import { getPermissionData } from '@/src/services/permissions';
+import { getPermissionDataById } from '@/src/services/permissions';
 import { createNewApplication } from '@/src/services/applications';
 
 function MultipleChoice({ question, selectedValue, onSelect }: QuestionProps) {
@@ -59,11 +59,16 @@ export function ExamForm({
     const fetchData = async () => {
       try {
         // setQuestions(await getQuestions(permId));
-        const permissions = await getPermissionData();
-        const permission = permissions.find((p) => p.id === permId);
-        if (permission) {
-          setQuestions(permission.questions);
-        }
+        // const permissions = await getPermissionData();
+        // console.log('Permissions', permissions);
+        // const permission = permissions.find((p) => p.id === permId);
+        // console.log('Filtered permission', permission);
+        // if (permission) {
+        //   setQuestions(permission.questions);
+        // }
+
+        const permission = await getPermissionDataById(permId);
+        setQuestions(permission.questions);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e);
@@ -182,6 +187,7 @@ export function ExamForm({
         })}
 
         <Group justify="flex-end" mt="md">
+          {/* TODO: replace this button with conditional buttons for the type of view it is (ie, submit, delete, etc) */}
           <Button type="submit" color={color}>
             {buttonText}
           </Button>
