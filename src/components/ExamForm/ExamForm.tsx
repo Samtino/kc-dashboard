@@ -3,9 +3,11 @@ import { Button, Container, Fieldset, Group, Image, Stack, Text } from '@mantine
 import { useForm } from '@mantine/form';
 import { Permission, Question, User } from '@prisma/client';
 // import { createNewApplication } from '@/src/services/applications';
-import { ActionType, MultipleChoiceQuestion, QuestionProps } from '@/lib/types';
+import { ActionType, MultipleChoiceQuestion, QuestionProps, UserData } from '@/lib/types';
 import { getPermissionDataById } from '@/src/services/permissions';
 import { createNewApplication } from '@/src/services/applications';
+import { updateUserCookie } from '@/src/services/user';
+import { revalidatePath } from 'next/cache';
 
 function MultipleChoice({ question, selectedValue, onSelect }: QuestionProps) {
   return (
@@ -47,11 +49,11 @@ function TrueFalse({ question, selectedValue, onSelect }: QuestionProps) {
 export function ExamForm({
   permId,
   type,
-  user_id,
+  userData,
 }: {
   permId: Permission['id'];
   type: ActionType;
-  user_id: User['id'];
+  userData: UserData;
 }) {
   const [questions, setQuestions] = useState<Question[]>([]);
 
@@ -132,11 +134,14 @@ export function ExamForm({
   return (
     <Container>
       <form
-        onSubmit={form.onSubmit((values) =>
-          createNewApplication(user_id, permId, Object.values(values)).then(() => {
-            window.location.reload();
-          })
-        )}
+        onSubmit={form.onSubmit(async (values) => {
+          const newApp = await createNewApplication(userData.id, permId, Object.values(values));
+          if (!newApp) {
+            throw new Error('Failed to create new application');
+          }
+          await updateUserCookie(userData.user.discord_id);
+          window.location.reload();
+        })}
       >
         {questions.map((question) => {
           function Element({ children }: { children: ReactNode }) {

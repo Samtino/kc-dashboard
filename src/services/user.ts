@@ -41,6 +41,16 @@ export const getCurrentUser = async (): Promise<UserData> => {
   return userData;
 };
 
+export const updateUserCookie = async (discord_id: User['discord_id']) => {
+  const userData = await getUserData(discord_id);
+
+  if (!userData) {
+    throw new Error('User not found');
+  }
+
+  await createUserCookie(userData);
+};
+
 export const createUserCookie = async (user: UserData) => {
   const cookie = await encrypt(user);
 
