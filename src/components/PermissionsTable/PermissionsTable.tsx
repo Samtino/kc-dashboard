@@ -2,7 +2,7 @@
 
 import { Center, Loader, Paper, Table } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { getCurrentUser } from '@/src/services/user';
+import { getCurrentUser, updateUserCookie } from '@/src/services/user';
 import { PermissionData, UserData } from '@/lib/types';
 import { TableData } from './TableData';
 import { getPermissionData } from '@/src/services/permissions';
@@ -17,12 +17,13 @@ export function PermissionsTable() {
     const fetchData = async () => {
       try {
         const currentUser = await getCurrentUser();
+        const updatedUser = await updateUserCookie(currentUser.user.discord_id);
 
         if (!currentUser) {
           throw new Error('User not found');
         }
 
-        setUserData(currentUser);
+        setUserData(updatedUser);
         setPermissionsData(await getPermissionData());
       } catch (e) {
         setError((e as Error).message);

@@ -49,6 +49,8 @@ export const updateUserCookie = async (discord_id: User['discord_id']) => {
   }
 
   await createUserCookie(userData);
+
+  return userData;
 };
 
 export const createUserCookie = async (user: UserData) => {
