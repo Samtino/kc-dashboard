@@ -4,7 +4,7 @@ import { UserData } from '@/lib/types';
 
 export async function middleware(request: NextRequest) {
   const cookie = request.cookies.get('user');
-  const userData: UserData | undefined = cookie ? await decrypt(cookie.value) : undefined;
+  const userData = cookie ? ((await decrypt(cookie.value)) as UserData) : undefined;
   const user = userData?.user;
   const path = request.nextUrl.pathname;
 

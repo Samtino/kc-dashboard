@@ -48,7 +48,7 @@ export const getCurrentUser = async (): Promise<UserData> => {
     throw new Error('User not found');
   }
 
-  const userData = await decrypt(cookie.value);
+  const userData = (await decrypt(cookie.value)) as UserData;
 
   return userData;
 };
