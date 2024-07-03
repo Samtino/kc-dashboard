@@ -2,6 +2,8 @@
 
 import { PermissionsTable } from '@/src/components/PermissionsTable/PermissionsTable';
 import AssetCycleNotification from './AssetCycleNotif';
+import { getPermissionData } from '@/src/services/permissions';
+import { getCurrentUser, getUserData } from '@/src/services/user';
 
 export default async function PermissionsPage() {
   /*
@@ -16,6 +18,10 @@ export default async function PermissionsPage() {
   //   color: 'red',
   // };
 
+  const permissions = await getPermissionData();
+  const currentUser = await getCurrentUser();
+  const userData = await getUserData(currentUser.user.discord_id);
+
   return (
     <div>
       <AssetCycleNotification />
@@ -27,7 +33,7 @@ export default async function PermissionsPage() {
 
       <br />
 
-      <PermissionsTable />
+      <PermissionsTable permissions={permissions} userData={userData} />
     </div>
   );
 }

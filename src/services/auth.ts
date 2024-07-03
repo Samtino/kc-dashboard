@@ -88,7 +88,7 @@ export const discordCallback = async (code: string) => {
   const tokenData: tokenData = await tokenResponse.json();
 
   const guildResponse = await fetch(
-    `https://discord.com/api/v10/users/@me/guilds/${process.env.DISCORD_GUILD_ID}/member`,
+    `https://discord.com/api/users/@me/guilds/${process.env.GUILD_ID}/member`,
     {
       headers: {
         Authorization: `${tokenData.token_type} ${tokenData.access_token}`,
@@ -130,12 +130,17 @@ export const discordCallback = async (code: string) => {
     user = await createUser(responseData);
   }
 
+  // Update user only if necessary
   if (
     user.user.discord_username !== responseData.discord_username ||
     user.user.discord_avatar_url !== responseData.discord_avatar_url ||
-    user.user.roles !== responseData.roles
+    JSON.stringify(user.user.roles.sort()) !== JSON.stringify(responseData.roles.sort())
   ) {
-    await updateUser(user.id, responseData);
+    await updateUser(user.id, {
+      discord_username: responseData.discord_username,
+      discord_avatar_url: responseData.discord_avatar_url,
+      roles: responseData.roles,
+    });
   }
 
   await createUserCookie(user);
@@ -147,7 +152,7 @@ const checkUserRoles = async (guildResponseData: guildData): Promise<User['roles
   const cacheKey = `${USER_ROLES_CACHE_KEY}${guildResponseData.user.id}`;
   let userRoles: User['roles'] = (await kv.get(cacheKey)) || [];
 
-  if (!userRoles) {
+  if (!userRoles.length) {
     const rolesIds = guildResponseData.roles;
     userRoles = [];
 

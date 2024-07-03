@@ -1,13 +1,11 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { Button, Container, Fieldset, Group, Image, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { Permission, Question, User } from '@prisma/client';
-// import { createNewApplication } from '@/src/services/applications';
+import { Permission, Question } from '@prisma/client';
 import { ActionType, MultipleChoiceQuestion, QuestionProps, UserData } from '@/lib/types';
 import { getPermissionDataById } from '@/src/services/permissions';
 import { createNewApplication } from '@/src/services/applications';
 import { updateUserCookie } from '@/src/services/user';
-import { revalidatePath } from 'next/cache';
 
 function MultipleChoice({ question, selectedValue, onSelect }: QuestionProps) {
   return (
@@ -60,15 +58,6 @@ export function ExamForm({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // setQuestions(await getQuestions(permId));
-        // const permissions = await getPermissionData();
-        // console.log('Permissions', permissions);
-        // const permission = permissions.find((p) => p.id === permId);
-        // console.log('Filtered permission', permission);
-        // if (permission) {
-        //   setQuestions(permission.questions);
-        // }
-
         const permission = await getPermissionDataById(permId);
         setQuestions(permission.questions);
       } catch (e) {
@@ -79,26 +68,6 @@ export function ExamForm({
 
     fetchData();
   }, [permId]);
-
-  let color;
-  let buttonText;
-  switch (type) {
-    case 'edit':
-      color = 'yellow';
-      buttonText = 'Edit';
-      break;
-    case 'send':
-      color = 'blue';
-      buttonText = 'Submit';
-      break;
-    case 'delete':
-      color = 'red';
-      buttonText = 'Delete';
-      break;
-    default:
-      color = 'gray';
-      buttonText = 'Close';
-  }
 
   const initialValues: { [key: string]: string } = {};
   questions.forEach((question) => {
@@ -135,12 +104,14 @@ export function ExamForm({
     <Container>
       <form
         onSubmit={form.onSubmit(async (values) => {
-          const newApp = await createNewApplication(userData.id, permId, Object.values(values));
-          if (!newApp) {
-            throw new Error('Failed to create new application');
+          if (type === 'send') {
+            const newApp = await createNewApplication(userData.id, permId, Object.values(values));
+            if (!newApp) {
+              throw new Error('Failed to create new application');
+            }
+            await updateUserCookie(userData.user.discord_id);
+            window.location.reload();
           }
-          await updateUserCookie(userData.user.discord_id);
-          window.location.reload();
         })}
       >
         {questions.map((question) => {
@@ -191,12 +162,13 @@ export function ExamForm({
           }
         })}
 
-        <Group justify="flex-end" mt="md">
-          {/* TODO: replace this button with conditional buttons for the type of view it is (ie, submit, delete, etc) */}
-          <Button type="submit" color={color}>
-            {buttonText}
-          </Button>
-        </Group>
+        {type === 'send' && (
+          <Group justify="flex-end" mt="md">
+            <Button type="submit" color="blue">
+              Submit
+            </Button>
+          </Group>
+        )}
       </form>
     </Container>
   );

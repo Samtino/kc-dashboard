@@ -1,40 +1,36 @@
 'use client';
 
 import { Button, Center, Loader, Paper, Table } from '@mantine/core';
-import { useEffect, useState } from 'react';
-import { getCurrentUser, updateUserCookie } from '@/src/services/user';
+import { useState } from 'react';
+import { updateUserCookie } from '@/src/services/user';
 import { PermissionData, UserData } from '@/lib/types';
 import { TableData } from './TableData';
-import { getPermissionData } from '@/src/services/permissions';
 
-export function PermissionsTable() {
-  const [userData, setUserData] = useState<UserData>();
-  const [loading, setLoading] = useState(true);
-  const [permissionsData, setPermissionsData] = useState<PermissionData[]>();
+export function PermissionsTable({
+  permissions,
+  userData,
+}: {
+  permissions: PermissionData[];
+  userData: UserData;
+}) {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const currentUser = await getCurrentUser();
+  const refreshData = async (data: UserData) => {
+    setLoading(true);
+    try {
+      await updateUserCookie(data.user.discord_id).then(() => window.location.reload());
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if (!currentUser) {
-          throw new Error('User not found');
-        }
+  const standardPerms = permissions.filter((perm) => perm.permission.asset_exam === false);
+  const assetPerms = permissions.filter((perm) => perm.permission.asset_exam === true);
 
-        setUserData(currentUser);
-        setPermissionsData(await getPermissionData());
-      } catch (e) {
-        setError((e as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // FIXME: Replace with <Skeleton /> data loading component in <PermissionsTable fallback={<Loading />} />
+  // FIXME: Replace with <Skeleton /> data loading component <Loading />
   if (loading) {
     return (
       <Center>
@@ -51,30 +47,9 @@ export function PermissionsTable() {
     );
   }
 
-  const standardPerms = permissionsData?.filter((perm) => perm.permission.asset_exam === false);
-  const assetPerms = permissionsData?.filter((perm) => perm.permission.asset_exam === true);
-
-  if (!assetPerms || !standardPerms || !userData) {
-    return (
-      <Center>
-        <h1>Error loading permissions</h1>
-      </Center>
-    );
-  }
-
   return (
     <>
-      <Button
-        onClick={() => {
-          (async () => {
-            await updateUserCookie(userData.user.discord_id).then(() => {
-            window.location.reload();
-            });
-          })();
-        }}
-      >
-        Refresh Data
-      </Button>
+      <Button onClick={() => refreshData(userData)}>Refresh Data</Button>
       <CreateTable permsType="Standard Permissions" permsData={standardPerms} userData={userData} />
       <CreateTable permsType="Asset Permissions" permsData={assetPerms} userData={userData} />
     </>

@@ -1,12 +1,10 @@
-// import { useEffect, useState } from 'react';
 import { ActionIcon, Badge, Center, Group, rem, Table, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Application, Permission, Strike } from '@prisma/client';
+import { Permission, Strike } from '@prisma/client';
 import { IconPencil, IconSend, IconTrash, IconX, IconZoom } from '@tabler/icons-react';
 import { ActionType, PermissionData, UserData } from '@/lib/types';
 import { ExamModal } from '../ExamModal/ExamModal';
 import { ExamForm } from '../ExamForm/ExamForm';
-// import { getPrerequisites } from '@/src/services/permissions';
 
 const statusColors: Record<string, string> = {
   PASSED: 'green',
@@ -58,7 +56,7 @@ export function TableData({
           <GetActionIcon
             status={status}
             perm={perm}
-            userCooldown={userApp?.next_apply_date}
+            userCooldown={userApp?.next_apply_date ?? undefined}
             userData={userData}
             prereqs={permData.prerequisites}
           />
@@ -68,26 +66,27 @@ export function TableData({
   );
 }
 
-function GetPrereqs({ prereqs, userData }: { prereqs: Permission[]; userData: UserData }) {
-  if (!prereqs.length) {
-    return (
-      <Badge color="gray" variant="light">
-        None
-      </Badge>
-    );
+function GetPrereqs({
+  prereqs,
+  userData,
+}: {
+  prereqs: PermissionData['prerequisites'];
+  userData: UserData;
+}) {
+  if (prereqs.length === 0) {
+    return <Badge color="gray">None</Badge>;
   }
+
   return (
     <>
-      {prereqs.map((item) => {
-        const color = userData.applications.some(
-          (app) => app.permission_id === item.id && app.status === 'PASSED'
-        )
-          ? 'green'
-          : 'red';
+      {prereqs.map((prereq) => {
+        const hasPrereq = userData.permissions.some(
+          (userPerm) => userPerm.permission_id === prereq.id
+        );
         return (
-          <Badge key={item.id} color={color} variant="filled">
-            {item.name}
-          </Badge>
+          <Tooltip label={prereq.name} key={prereq.id}>
+            <Badge color={hasPrereq ? 'green' : 'red'}>{prereq.name}</Badge>
+          </Tooltip>
         );
       })}
     </>
@@ -95,22 +94,26 @@ function GetPrereqs({ prereqs, userData }: { prereqs: Permission[]; userData: Us
 }
 
 function GetStrikeBadges({ strikes }: { strikes: Strike[] }) {
-  const strikeBadge = (strikeType: string, color: string, label: string) => (
-    <Badge
-      color={strikes.some((strike) => strike.type === strikeType) ? color : 'gray'}
-      variant="filled"
-      circle
-    >
-      {label}
-    </Badge>
-  );
+  const warning = strikes.find((strike) => strike.type === 'WARNING');
+  const strike1 = strikes.find((strike) => strike.type === 'STRIKE1');
+  const strike2 = strikes.find((strike) => strike.type === 'STRIKE2');
+
+  const strikeBadges = [
+    { label: 'W', color: warning ? 'yellow' : 'gray' },
+    { label: '1', color: strike1 ? 'red' : 'gray' },
+    { label: '2', color: strike2 ? 'red' : 'gray' },
+  ];
 
   return (
-    <Group justify="center">
-      {strikeBadge('WARNING', 'yellow', 'W')}
-      {strikeBadge('STRIKE1', 'red', 'S')}
-      {strikeBadge('STRIKE2', 'red', 'S')}
-    </Group>
+    <>
+      {strikeBadges.map((badge, index) => (
+        <Tooltip label={badge.label} key={index}>
+          <Badge color={badge.color} m={6} circle>
+            {badge.label}
+          </Badge>
+        </Tooltip>
+      ))}
+    </>
   );
 }
 
@@ -121,9 +124,9 @@ function GetActionIcon({
   userData,
   prereqs,
 }: {
-  status: Application['status'];
+  status: string;
   perm: Permission;
-  userCooldown?: Application['next_apply_date'];
+  userCooldown: Date | undefined;
   userData: UserData;
   prereqs: Permission[];
 }) {
@@ -150,7 +153,7 @@ function GetActionIcon({
   const actionTypes: Record<string, ActionType[]> = {
     PASSED: ['view'],
     FAILED: ['send'],
-    PENDING: ['edit', 'delete'],
+    PENDING: ['view', 'edit', 'delete'],
     BLACKLISTED: [],
     NONE: ['send'],
     PREREQS: ['prereqs'],
@@ -178,6 +181,7 @@ function GetActionIcon({
             perm={perm}
             disabled={action.disabled}
             userData={userData}
+            // prereqs={prereqs}
           />
         );
       })}
@@ -190,11 +194,13 @@ function GetActionButton({
   perm,
   disabled,
   userData,
+  // prereqs,
 }: {
   actionType: ActionType;
   perm: Permission;
   disabled?: boolean;
   userData: UserData;
+  // prereqs: Permission[];
 }) {
   const actionConfig: Record<
     string,
@@ -220,7 +226,27 @@ function GetActionButton({
       <ExamModal hidden={hidden} toggle={toggle} title={title}>
         <ExamForm permId={perm.id} type={actionType} userData={userData} />
       </ExamModal>
-      <ActionIcon variant={variant} color={color} radius="lg" onClick={toggle} disabled={disabled}>
+      <ActionIcon
+        variant={variant}
+        color={color}
+        radius="lg"
+        onClick={() => {
+          switch (actionType) {
+            case 'send':
+            case 'view':
+              toggle();
+              // TODO: Implement view exam
+              break;
+            case 'edit':
+              // TODO: Implement edit exam
+              break;
+            case 'delete':
+              // TODO: Implement delete exam
+              break;
+          }
+        }}
+        disabled={disabled}
+      >
         <Tooltip label={label} offset={10} position="left">
           <IconComponent style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
         </Tooltip>
