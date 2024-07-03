@@ -1,32 +1,44 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { User } from '@prisma/client';
-import { UserData } from '@/lib/types';
+import type { User } from '@prisma/client';
+import { kv } from '@vercel/kv';
 import prisma from '@/lib/prisma';
+import { UserData } from '@/lib/types';
 import { decrypt, encrypt } from './encryption';
 
-export const getUserData = async (discord_id: User['discord_id']): Promise<UserData> => {
-  const userData = await prisma.user.findUnique({
-    where: { discord_id },
-    include: {
-      permissions: true,
-      applications: true,
-      strikes: true,
-    },
-  });
+const USER_CACHE_KEY_PREFIX = 'user_cache_';
 
-  if (!userData) {
-    throw new Error('User not found');
+export const getUserData = async (discord_id: User['discord_id']): Promise<UserData> => {
+  const cacheKey = `${USER_CACHE_KEY_PREFIX}${discord_id}`;
+  let userCache: UserData | null = await kv.get(cacheKey);
+
+  if (!userCache) {
+    const user = await prisma.user.findUnique({
+      where: { discord_id },
+      include: {
+        permissions: true,
+        applications: true,
+        strikes: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    userCache = {
+      id: user.id,
+      user,
+      permissions: user.permissions,
+      applications: user.applications,
+      strikes: user.strikes,
+    };
+
+    await kv.set(cacheKey, userCache);
   }
 
-  return {
-    id: userData.id,
-    user: userData,
-    permissions: userData.permissions,
-    applications: userData.applications,
-    strikes: userData.strikes,
-  };
+  return userCache;
 };
 
 export const getCurrentUser = async (): Promise<UserData> => {
@@ -86,6 +98,9 @@ export const createUser = async ({
       strikes: true,
     },
   });
+
+  const cacheKey = `${USER_CACHE_KEY_PREFIX}${userData.discord_id}`;
+  await kv.set(cacheKey, userData);
 
   return {
     id: userData.id,

@@ -1,5 +1,6 @@
 'use server';
 
+import { kv } from '@vercel/kv';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { User } from '@prisma/client';
@@ -25,6 +26,8 @@ type guildData = {
     global_name: string | null;
   };
 };
+
+const USER_ROLES_CACHE_KEY = 'user_roles_';
 
 export const login = async () => {
   const userCookie = cookies().get('user');
@@ -78,26 +81,26 @@ export const discordCallback = async (code: string) => {
     body: params.toString(),
   });
 
-  const tokenData: tokenData = await tokenResponse.json();
-
-  if (!tokenData.access_token) {
-    return redirect('/?error=TokenExchangeFailed');
+  if (!tokenResponse.ok) {
+    throw new Error('Failed to retrieve access token from Discord');
   }
 
+  const tokenData: tokenData = await tokenResponse.json();
+
   const guildResponse = await fetch(
-    `https://discord.com/api/users/@me/guilds/${process.env.GUILD_ID}/member`,
+    `https://discord.com/api/v10/users/@me/guilds/${process.env.DISCORD_GUILD_ID}/member`,
     {
       headers: {
-        Authorization: `Bearer ${tokenData.access_token}`,
+        Authorization: `${tokenData.token_type} ${tokenData.access_token}`,
       },
     }
   );
 
-  const guildResponseData: guildData = await guildResponse.json();
-
-  if (!guildResponseData.joined_at) {
-    return redirect('/?error=notInGuild');
+  if (!guildResponse.ok) {
+    throw new Error('Failed to retrieve guild data from Discord');
   }
+
+  const guildResponseData: guildData = await guildResponse.json();
 
   const discordName =
     guildResponseData.nick || guildResponseData.user.global_name || guildResponseData.user.username;
@@ -140,32 +143,39 @@ export const discordCallback = async (code: string) => {
   return redirect('/dashboard');
 };
 
-const checkUserRoles = async (guildResponseData: guildData) => {
-  const rolesIds = guildResponseData.roles;
-  const userRoles: User['roles'] = [];
+const checkUserRoles = async (guildResponseData: guildData): Promise<User['roles']> => {
+  const cacheKey = `${USER_ROLES_CACHE_KEY}${guildResponseData.user.id}`;
+  let userRoles: User['roles'] = (await kv.get(cacheKey)) || [];
 
-  const sysAdmins = process.env.SYS_ADMIN_IDS?.split(',') ?? [];
-  if (sysAdmins.includes(guildResponseData.user.id)) {
-    userRoles.push('SYS_ADMIN');
-  }
+  if (!userRoles) {
+    const rolesIds = guildResponseData.roles;
+    userRoles = [];
 
-  rolesIds.forEach((roleId) => {
-    switch (roleId) {
-      case process.env.CS_ROLE_ID:
-        userRoles.push('COMMUNITY_STAFF');
-        break;
-      case process.env.ADMIN_ROLE_ID:
-        userRoles.push('ADMIN');
-        break;
-      case process.env.KOG_ROLE_ID:
-      case process.env.MPU_ROLE_ID:
-        userRoles.push('KOG');
-        break;
-      case process.env.KT_ROLE_ID:
-        userRoles.push('KT');
-        break;
+    const sysAdmins = process.env.SYS_ADMIN_IDS?.split(',') ?? [];
+    if (sysAdmins.includes(guildResponseData.user.id)) {
+      userRoles.push('SYS_ADMIN');
     }
-  });
+
+    rolesIds.forEach((roleId) => {
+      switch (roleId) {
+        case process.env.CS_ROLE_ID:
+          userRoles.push('COMMUNITY_STAFF');
+          break;
+        case process.env.ADMIN_ROLE_ID:
+          userRoles.push('ADMIN');
+          break;
+        case process.env.KOG_ROLE_ID:
+        case process.env.MPU_ROLE_ID:
+          userRoles.push('KOG');
+          break;
+        case process.env.KT_ROLE_ID:
+          userRoles.push('KT');
+          break;
+      }
+    });
+
+    await kv.set(cacheKey, userRoles);
+  }
 
   return userRoles;
 };

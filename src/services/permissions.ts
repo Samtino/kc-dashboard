@@ -1,11 +1,15 @@
 'use server';
 
+import { kv } from '@vercel/kv';
+import type { Permission } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { PermissionData } from '@/lib/types';
 
-let permissionCache: PermissionData[] | null = null;
+const PERMISSION_CACHE_KEY = 'permissions_cache';
 
 export const getPermissionData = async (): Promise<PermissionData[]> => {
+  let permissionCache: PermissionData[] | null = await kv.get(PERMISSION_CACHE_KEY);
+
   if (!permissionCache) {
     try {
       const permissions = await prisma.permission.findMany({
@@ -23,6 +27,8 @@ export const getPermissionData = async (): Promise<PermissionData[]> => {
         prerequisites: permission.prerequisites,
         prerequisitesFor: permission.prerequisite_for,
       }));
+
+      await kv.set(PERMISSION_CACHE_KEY, permissionCache);
     } catch (error) {
       throw new Error('Failed to fetch permissions data');
     }
@@ -30,10 +36,8 @@ export const getPermissionData = async (): Promise<PermissionData[]> => {
   return permissionCache;
 };
 
-export const getPermissionDataById = async (id: string): Promise<PermissionData> => {
-  if (!permissionCache) {
-    await getPermissionData();
-  }
+export const getPermissionDataById = async (id: Permission['id']): Promise<PermissionData> => {
+  const permissionCache = await getPermissionData();
 
   const permission = permissionCache?.find((perm) => perm.id === id);
 
@@ -45,5 +49,5 @@ export const getPermissionDataById = async (id: string): Promise<PermissionData>
 };
 
 export const clearPermissionCache = async () => {
-  permissionCache = null;
+  await kv.del(PERMISSION_CACHE_KEY);
 };
