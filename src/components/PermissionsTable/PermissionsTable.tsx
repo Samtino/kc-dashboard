@@ -65,9 +65,13 @@ export function PermissionsTable() {
   return (
     <>
       <Button
-        onClick={async () =>
-          await updateUserCookie(userData.user.discord_id).then(() => window.location.reload())
-        }
+        onClick={() => {
+          (async () => {
+            await updateUserCookie(userData.user.discord_id).then(() => {
+            window.location.reload();
+            });
+          })();
+        }}
       >
         Refresh Data
       </Button>
