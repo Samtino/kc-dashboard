@@ -1,6 +1,6 @@
 'use client';
 
-import { Center, Loader, Paper, Table } from '@mantine/core';
+import { Button, Center, Loader, Paper, Table } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { getCurrentUser, updateUserCookie } from '@/src/services/user';
 import { PermissionData, UserData } from '@/lib/types';
@@ -17,13 +17,12 @@ export function PermissionsTable() {
     const fetchData = async () => {
       try {
         const currentUser = await getCurrentUser();
-        const updatedUser = await updateUserCookie(currentUser.user.discord_id);
 
         if (!currentUser) {
           throw new Error('User not found');
         }
 
-        setUserData(updatedUser);
+        setUserData(currentUser);
         setPermissionsData(await getPermissionData());
       } catch (e) {
         setError((e as Error).message);
@@ -35,6 +34,7 @@ export function PermissionsTable() {
     fetchData();
   }, []);
 
+  // FIXME: Replace with <Skeleton /> data loading component in <PermissionsTable fallback={<Loading />} />
   if (loading) {
     return (
       <Center>
@@ -64,6 +64,13 @@ export function PermissionsTable() {
 
   return (
     <>
+      <Button
+        onClick={async () =>
+          await updateUserCookie(userData.user.discord_id).then(() => window.location.reload())
+        }
+      >
+        Refresh Data
+      </Button>
       <CreateTable permsType="Standard Permissions" permsData={standardPerms} userData={userData} />
       <CreateTable permsType="Asset Permissions" permsData={assetPerms} userData={userData} />
     </>
