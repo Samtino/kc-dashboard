@@ -1,3 +1,5 @@
+'use client';
+
 import { UnstyledButton, Group, Avatar, Text, Menu, Divider, Center } from '@mantine/core';
 import { User } from '@prisma/client';
 import { useEffect, useState } from 'react';
