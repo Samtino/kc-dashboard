@@ -6,8 +6,6 @@ import { Navbar } from './Navbar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [opened, { toggle }] = useDisclosure(true);
-
-  const theme = useMantineTheme();
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (

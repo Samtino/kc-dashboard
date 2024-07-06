@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SegmentedControl, Text } from '@mantine/core';
+import { SegmentedControl, Text, UnstyledButton } from '@mantine/core';
 import Link from 'next/link';
 import {
   IconShoppingCart,
@@ -16,11 +16,12 @@ import {
 import classes from './Navbar.module.css';
 import { User } from '@prisma/client';
 import { getCurrentUser } from '@/src/services/user';
+import { logout } from '@/src/services/auth';
 
 const standardTabs = {
   dashboard: [
     { link: '/dashboard', label: 'Home', icon: IconLayoutBoard },
-    { link: '/dashboard/permissions', label: 'Overview', icon: IconKey },
+    { link: '/dashboard/permissions', label: 'Permissions', icon: IconKey },
     { link: '/dashboard/permissions/sops', label: 'SOPs', icon: IconDatabase },
     { link: '/dashboard/permissions/rules', label: 'Rules', icon: IconShieldLock },
   ],
@@ -94,6 +95,15 @@ export function Navbar() {
     </Link>
   ));
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (e: any) {
+      // eslint-disable-next-line no-console
+      console.error(e.message);
+    }
+  };
+
   return (
     <nav className={classes.navbar}>
       <div>
@@ -121,10 +131,10 @@ export function Navbar() {
           <span>Settings</span>
         </Link>
 
-        <Link href="/logout" className={classes.link}>
+        <UnstyledButton className={classes.link} onClick={handleLogout} w="100%">
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>
-        </Link>
+        </UnstyledButton>
       </div>
     </nav>
   );
