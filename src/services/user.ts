@@ -66,15 +66,20 @@ export const updateUserCookie = async (discord_id: User['discord_id']) => {
 };
 
 export const createUserCookie = async (user: UserData) => {
-  const cookie = await encrypt(user);
+  try {
+    const cookie = await encrypt(user);
 
-  cookies().set('user', cookie, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 3600, // 1 hour
-    path: '/',
-  });
+    cookies().set('user', cookie, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600, // 1 hour
+      path: '/',
+    });
+    return cookie;
+  } catch (error) {
+    throw new Error(`Failed to create user cookie: ${error}`);
+  }
 };
 
 export const createUser = async ({

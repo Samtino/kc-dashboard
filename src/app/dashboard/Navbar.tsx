@@ -17,6 +17,7 @@ import classes from './Navbar.module.css';
 import { User } from '@prisma/client';
 import { getCurrentUser } from '@/src/services/user';
 import { logout } from '@/src/services/auth';
+import { redirect } from 'next/navigation';
 
 const standardTabs = {
   dashboard: [
@@ -63,7 +64,9 @@ export function Navbar() {
         }
       } catch (e: any) {
         // eslint-disable-next-line no-console
-        console.error(e.message);
+        console.error('Navbar error:', e.message);
+        console.error('Redirecting to origin page...');
+        handleLogout();
       }
     };
 
