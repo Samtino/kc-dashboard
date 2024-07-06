@@ -1,35 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import {
-  AppShell,
-  Group,
-  ScrollArea,
-  Image,
-  Burger,
-  Loader,
-  Center,
-  Divider,
-  Stack,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import NextImage from 'next/image';
-import { IconLock, IconSword, IconShield, IconSwords, IconLayoutBoard } from '@tabler/icons-react';
-import { User } from '@prisma/client';
-import { ColorSchemeToggle, LinksGroup, UserButton } from '@/src/components';
-import classes from './Dashboard.module.css';
-import icon from '@/src/public/icon.png';
-import { LinksGroupProps } from '@/src/components/NavbarLinksGroup/NavbarLinksGroup';
-import { getCurrentUser } from '@/src/services/user';
-import { headers } from 'next/headers';
+import { AppShell, Group, Burger, useMantineTheme } from '@mantine/core';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { Navbar } from './Navbar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [opened, { toggle }] = useDisclosure();
+  const [opened, { toggle }] = useDisclosure(true);
+
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (
     <AppShell
       padding={{ base: 'md', lg: 'lg' }}
+      header={{ collapsed: !isMobile, height: 60 }}
       navbar={{
         width: { base: 300 },
         breakpoint: 'sm',
@@ -37,9 +21,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }}
       withBorder={false}
     >
-      <AppShell.Header hidden={true}>
-        <h1>Header</h1>
-      </AppShell.Header>
+      {isMobile && (
+        <AppShell.Header>
+          <Group>
+            <Burger opened={opened} onClick={toggle} size="sm" />
+            Toggle Sidebar
+          </Group>
+        </AppShell.Header>
+      )}
 
       <AppShell.Navbar>
         <Navbar />
