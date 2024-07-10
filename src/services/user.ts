@@ -54,6 +54,8 @@ export const getCurrentUser = async (): Promise<UserData> => {
 };
 
 export const updateUserCookie = async (discord_id: User['discord_id']) => {
+  const cacheKey = `${USER_CACHE_KEY_PREFIX}${discord_id}`;
+  await kv.del(cacheKey);
   const userData = await getUserData(discord_id);
 
   if (!userData) {
@@ -121,3 +123,48 @@ export const updateUser = async (user_id: User['id'], data: Partial<User>) =>
     where: { id: user_id },
     data,
   });
+
+export const fetchSteamAccount = async (steamId: string) => {
+  const apiKey = process.env.STEAM_API_KEY;
+  // http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=71D8C0857A7E2FCFD4A81849EA776741&steamids=76561198120351235
+  const response = await fetch(
+    `http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamId}`
+  );
+  const data = await response.json();
+  const playerData = data.response.players[0];
+
+  return playerData;
+};
+
+export const fetchBMID = async (steamId: string) => {
+  const apiKey = process.env.BM_API_KEY;
+  const url = 'https://api.battlemetrics.com/players/match';
+  const body = JSON.stringify({
+    data: [
+      {
+        type: 'identifier',
+        attributes: {
+          type: 'steamID',
+          identifier: steamId,
+        },
+      },
+    ],
+  });
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body,
+    });
+    const data = await response.json();
+    const bmid = data.data[0].relationships.player.data.id;
+
+    return bmid as string;
+  } catch (error) {
+    return null;
+  }
+};

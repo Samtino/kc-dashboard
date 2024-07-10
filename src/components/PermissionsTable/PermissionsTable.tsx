@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { updateUserCookie } from '@/src/services/user';
 import { PermissionData, UserData } from '@/lib/types';
 import { TableData } from './TableData';
+import { SteamID } from './SteamID';
 
 export function PermissionsTable({
   permissions,
@@ -49,7 +50,8 @@ export function PermissionsTable({
 
   return (
     <>
-      <Button onClick={() => refreshData(userData)}>Refresh Data</Button>
+      {/* <Button onClick={() => refreshData(userData)}>Refresh Data</Button> */}
+      <SteamID userData={userData} />
       <CreateTable permsType="Standard Permissions" permsData={standardPerms} userData={userData} />
       <CreateTable permsType="Asset Permissions" permsData={assetPerms} userData={userData} />
     </>
