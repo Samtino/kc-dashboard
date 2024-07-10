@@ -45,7 +45,7 @@ export default function AdminApplicationsPage() {
     };
 
     fetchData();
-  }, [applications, permissions]);
+  }, []);
 
   if (loading) {
     return <Title order={1}>Loading...</Title>;

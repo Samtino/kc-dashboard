@@ -32,28 +32,30 @@ export async function middleware(request: NextRequest) {
 
     const { user } = (await decrypt(cookie.value)) as UserData;
 
-    if (!user.roles.includes('KOG') && pathname.startsWith('/dashboard/kog')) {
-      // If not KOG, redirect to dashboard
-      url.pathname = '/dashboard';
-      return NextResponse.redirect(url);
-    }
+    if (user) {
+      if (!user.roles.includes('KOG') && pathname.startsWith('/dashboard/kog')) {
+        // If not KOG, redirect to dashboard
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
+      }
 
-    if (!user.roles.includes('KT') && pathname.startsWith('/dashboard/kt')) {
-      // If not KT, redirect to dashboard
-      url.pathname = '/dashboard';
-      return NextResponse.redirect(url);
-    }
+      if (!user.roles.includes('KT') && pathname.startsWith('/dashboard/kt')) {
+        // If not KT, redirect to dashboard
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
+      }
 
-    if (!user.roles.includes('ADMIN') && pathname.startsWith('/dashboard/admin')) {
-      // If not ADMIN, redirect to dashboard
-      url.pathname = '/dashboard';
-      return NextResponse.redirect(url);
-    }
+      if (!user.roles.includes('ADMIN') && pathname.startsWith('/dashboard/admin')) {
+        // If not ADMIN, redirect to dashboard
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
+      }
 
-    if (!user.roles.includes('COMMUNITY_STAFF') && pathname.startsWith('/dashboard/cs')) {
-      // If not CS, redirect to dashboard
-      url.pathname = '/dashboard';
-      return NextResponse.redirect(url);
+      if (!user.roles.includes('COMMUNITY_STAFF') && pathname.startsWith('/dashboard/cs')) {
+        // If not CS, redirect to dashboard
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
+      }
     }
 
     return NextResponse.next();
