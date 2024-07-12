@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* <script src="http://localhost:8097" async></script> */}
         <ColorSchemeScript defaultColorScheme={initialColorScheme} />
-        <link rel="shortcut icon" href="/icon.png" />
+        {/* <link rel="shortcut icon" href="/icon.png" type="image/x-icon" /> FIXME */}
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
