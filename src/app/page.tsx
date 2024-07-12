@@ -5,6 +5,11 @@ import { ColorSchemeToggle } from '@/src/components/ColorSchemeToggle/ColorSchem
 import { FeaturesList } from './LandingComponents';
 import { DiscordLoginButton, GithubIssuesButton } from '../components/Buttons/Buttons';
 
+export const metadata = {
+  title: 'KC Permissions Dashboard',
+  description: 'Welcome to the Karma Community Permissions Dashboard!',
+};
+
 export default async function Landing() {
   return (
     <Container size="md">

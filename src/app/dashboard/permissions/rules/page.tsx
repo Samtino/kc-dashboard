@@ -1,6 +1,10 @@
 import { Button } from '@mantine/core';
 import Link from 'next/link';
 
+export const metadata = {
+  title: 'KC Dashboard - Rules',
+};
+
 export default function SopsPage() {
   return (
     <>

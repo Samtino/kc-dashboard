@@ -1,9 +1,11 @@
-'use server';
-
 import { PermissionsTable } from '@/src/components/PermissionsTable/PermissionsTable';
 import AssetCycleNotification from './AssetCycleNotif';
 import { getPermissionData } from '@/src/services/permissions';
 import { getCurrentUser, getUserData } from '@/src/services/user';
+
+export const metadata = {
+  title: 'KC Dashboard - Permissions',
+};
 
 export default async function PermissionsPage() {
   /*

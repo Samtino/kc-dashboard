@@ -14,6 +14,11 @@ type AppState = {
   };
 };
 
+// FIXME: make page a server component with sub components
+// export const metadata = {
+//   title: 'KC Dashboard - Applications',
+// };
+
 export default function AdminApplicationsPage() {
   const [permissions, setPermissions] = useState<PermissionData[]>([]);
   const [applications, setApplications] = useState<ApplicationData[]>([]);
